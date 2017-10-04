@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Open.Caching.CacheBase&lt;TPriority&gt;">
+    <Position X="10" Y="0.5" Width="2.5" />
+    <InheritanceLine Type="Open.Caching.CachePolicyControllerBase&lt;TPriority&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="11.25" Y="3.25" />
+        <Point X="11.25" Y="2.694" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAISAAAAAAAAAAAAQAAAAAAABAA=</HashCode>
+      <FileName>CacheBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Open.Caching.CachePolicyControllerBase&lt;TPriority&gt;">
+    <Position X="10" Y="3.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIgAAABECgAAAAAgAAAAAAAACABAAAAAAAA=</HashCode>
+      <FileName>CachePolicyControllerBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Open.Caching.CachingModifier&lt;TPriority&gt;">
+    <Position X="13.25" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAgAAAAAAAACAIQAAAAAAAAAAAAQAAAAAAABAA=</HashCode>
+      <FileName>CachingModifier.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Open.Caching.ObjectCacheExtensions">
+    <Position X="16" Y="3.5" Width="3.5" />
+    <NestedTypes>
+      <Delegate Name="Open.Caching.ObjectCacheExtensions.CacheItemDelegate&lt;T&gt;" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ObjectCacheExtensions.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Open.Caching.ObjectCacheExtensions.CacheItemWithPolicyDelegate&lt;T&gt;" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ObjectCacheExtensions.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAgIQAAAAAAAAAAAAIAAAAAAAAAAAQAACAAAAAAAAA=</HashCode>
+      <FileName>ObjectCacheExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Open.Caching.ObjectCacheHelper">
+    <Position X="16.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAACAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ObjectCacheHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Open.Caching.ICachingModifier&lt;TPriority&gt;">
+    <Position X="0.5" Y="3" Width="2.75" />
+    <InheritanceLine Type="Open.Caching.IGetOrAdd" FixedToPoint="true">
+      <Path>
+        <Point X="5" Y="2.103" />
+        <Point X="5" Y="3.562" />
+        <Point X="3.25" Y="3.562" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ICachingModifier.cs</FileName>
+      <NewMemberFileName>ICache.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Open.Caching.IGetOrAdd">
+    <Position X="3.75" Y="1" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IGetOrAdd.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Open.Caching.IPolicyController&lt;T, TPriority&gt;">
+    <Position X="5.5" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAIgAAAAEAAAQAAAAAAAAAAAAQABAAAAABAA=</HashCode>
+      <FileName>IPolicyController.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Open.Caching.ICache&lt;TPriority&gt;">
+    <Position X="0.75" Y="0.5" Width="2" />
+    <InheritanceLine Type="Open.Caching.ICachingModifier&lt;TPriority&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="1.75" Y="3" />
+        <Point X="1.75" Y="2.247" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIQAAAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>ICache.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Open.Caching.ExpirationMode">
+    <Position X="7" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAIAA=</HashCode>
+      <FileName>ExpirationMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
