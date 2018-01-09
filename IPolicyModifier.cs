@@ -21,11 +21,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE. */
 
 using System;
-using System.Runtime.Caching;
 
 namespace Open.Caching
 {
-	public interface IPolicyModifier<T, TPriority>
+    public interface IPolicyModifier<T, TPriority>
 		where T : IPolicyModifier<T, TPriority>
 	{
 		ExpirationMode Mode { get; }
