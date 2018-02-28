@@ -66,6 +66,15 @@ namespace Open.Caching.Web
 		public object Add(string key, object value, CacheItemRemovedCallback callback)
 			=> Add(key, value, null, callback);
 
+		public object this[string key]
+		{
+		    get => HttpRuntime.Cache?[key];
+		    set => Insert(key, value);
+		}
+
+		public CachingPolicyEntry<T> Entry<T>(string key)
+		    => new CachingPolicyEntry<T>(this, key);
+		
 		static Task<T> ReturnAsTask<T>(object value)
 		{
 			if (value == null) return null;
