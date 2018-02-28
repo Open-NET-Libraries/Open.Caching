@@ -4,14 +4,4 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="ObjectCacheExtensions.cs" />
-    <Compile Remove="ObjectCacheHelper.cs" />
-    <Compile Remove="ObjectCacheModifier.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Runtime" Version="4.3.0" />
-  </ItemGroup>
-
 </Project>
