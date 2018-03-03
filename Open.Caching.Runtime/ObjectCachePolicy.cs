@@ -54,7 +54,7 @@ namespace Open.Caching.Runtime
 		public Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> factory)
 		{
 			// Check if task/value exists first.
-			var current = ReturnAsTask<T>(HttpRuntime.Cache?[key]);
+			var current = ReturnAsTask<T>(Cache[key]);
 			if (current != null) return current;
 
 			// Setup the task.
