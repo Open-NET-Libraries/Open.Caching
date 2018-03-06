@@ -12,23 +12,19 @@ namespace Open.Caching.Web
 		public readonly ExpirationMode Mode;
 		public readonly TimeSpan ExpiresAfter;
 		public readonly CacheItemPriority Priority;
-		public readonly TimeSpan ExpiresSliding;
-		public DateTime ExpiresAbsolute => Mode == ExpirationMode.Absolute ? DateTime.Now.Add(ExpiresAfter) : Cache.NoAbsoluteExpiration;
 
 		private CachingPolicy(ExpirationMode mode, TimeSpan expiresAfter, CacheItemPriority priority)
 		{
 			Mode = mode;
 			ExpiresAfter = expiresAfter;
 			Priority = priority;
-
-			ExpiresSliding = mode == ExpirationMode.Sliding ? expiresAfter : Cache.NoSlidingExpiration;
 		}
 
 		public override bool Equals(object obj)
 			=> obj is CachingPolicy policy
 				&& Mode == policy.Mode
 				&& ExpiresAfter.Equals(policy.ExpiresAfter)
-				&& Priority.Equals(policy.Priority);
+				&& Priority == policy.Priority;
 
 		public override int GetHashCode()
 		{
@@ -43,6 +39,17 @@ namespace Open.Caching.Web
 		public static bool operator ==(CachingPolicy left, CachingPolicy right) => left.Equals(right);
 		public static bool operator !=(CachingPolicy left, CachingPolicy right) => !left.Equals(right);
 
+		private CachingPolicy(ExpirationMode mode) : this(mode, TimeSpan.MaxValue, CacheItemPriority.Default)
+		{
+		}
+
+		private CachingPolicy(TimeSpan expiresAfter) : this(ExpirationMode.Absolute, expiresAfter, CacheItemPriority.Default)
+		{
+		}
+
+		private CachingPolicy(CacheItemPriority priority) : this(ExpirationMode.Absolute, TimeSpan.MaxValue, priority)
+		{
+		}
 
 		public static CachingPolicy Slide(TimeSpan after, CacheItemPriority priority = CacheItemPriority.Default)
 			=> new CachingPolicy(ExpirationMode.Sliding, after, priority);
@@ -56,6 +63,34 @@ namespace Open.Caching.Web
 		public static CachingPolicy Expire(uint seconds, CacheItemPriority priority = CacheItemPriority.Default)
 			=> Expire(TimeSpan.FromSeconds(seconds), priority);
 
+		DateTime ExpiresAbsolute => Mode == ExpirationMode.Absolute ? DateTime.Now.Add(ExpiresAfter) : Cache.NoAbsoluteExpiration;
+		TimeSpan ExpiresSliding => Mode == ExpirationMode.Sliding ? ExpiresAfter : Cache.NoSlidingExpiration;
+
+		public CachingPolicy Slide()
+		{
+			return Mode == ExpirationMode.Sliding ? this : new CachingPolicy(ExpirationMode.Sliding, ExpiresAfter, Priority);
+		}
+
+		public CachingPolicy Expire()
+		{
+			return Mode == ExpirationMode.Absolute ? this : new CachingPolicy(ExpirationMode.Absolute, ExpiresAfter, Priority);
+		}
+
+		public CachingPolicy After(TimeSpan after)
+		{
+			return ExpiresAfter == after ? this : new CachingPolicy(Mode, after, Priority);
+		}
+
+		public CachingPolicy After(int seconds)
+		{
+			return After(TimeSpan.FromSeconds(seconds));
+		}
+
+		public CachingPolicy WithPriority(CacheItemPriority priority)
+		{
+			return Priority == priority ? this : new CachingPolicy(Mode, ExpiresAfter, priority);
+		}
+
 		public void Insert(string key, object value, CacheDependency dependencies = null, CacheItemRemovedCallback callback = null)
 			=> HttpRuntime.Cache?.Insert(key, value, dependencies, ExpiresAbsolute, ExpiresSliding, Priority, callback);
 		public void Insert(string key, object value, CacheItemRemovedCallback callback)
@@ -68,13 +103,13 @@ namespace Open.Caching.Web
 
 		public object this[string key]
 		{
-		    get => HttpRuntime.Cache?[key];
-		    set => Insert(key, value);
+			get => HttpRuntime.Cache?[key];
+			set => Insert(key, value);
 		}
 
-		public CachingPolicyEntry<T> Entry<T>(string key)
-		    => new CachingPolicyEntry<T>(this, key);
-		
+		public CachingPolicyEntry<T> Entry<T>(string key, T defaultValue = default(T))
+			=> new CachingPolicyEntry<T>(this, key, defaultValue);
+
 		static Task<T> ReturnAsTask<T>(object value)
 		{
 			if (value == null) return null;
@@ -98,9 +133,9 @@ namespace Open.Caching.Web
 
 			if (current != null) return current;
 			/* If current is null here, then either:
-				1) Ours was used. https://msdn.microsoft.com/en-us/library/system.web.caching.cache.add(v=vs.110).aspx
-				2) There is no HttpRuntime.Cache available.
-				3) There is a value/type collision that will trigger Debug.Fail but not be fatal otherwise. */
+                1) Ours was used. https://msdn.microsoft.com/en-us/library/system.web.caching.cache.add(v=vs.110).aspx
+                2) There is no HttpRuntime.Cache available.
+                3) There is a value/type collision that will trigger Debug.Fail but not be fatal otherwise. */
 
 			// We own the task.  Go ahead and run it.
 			if (runSynchronously) task.RunSynchronously();
@@ -111,5 +146,6 @@ namespace Open.Caching.Web
 
 		public T GetOrAdd<T>(string key, Func<T> factory)
 			=> GetOrAddAsync(key, factory, true).Result;
+
 	}
 }
