@@ -50,6 +50,32 @@ namespace Open.Caching.Runtime
 			Debug.Fail("Actual type does not match expected for cache entry.");
 			return null;
 		}
+		
+		public Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> factory)
+		{
+			// Check if task/value exists first.
+			var current = ReturnAsTask<T>(Cache[key]);
+			if (current != null) return current;
+
+			// Setup the task.
+			var task = new Task<Task<T>>(factory);
+			var unwrapped = task.Unwrap();
+
+			// Attempt to add the task.  If current is not null, then return it (not ours).
+			current = ReturnAsTask<T>(Add(key, unwrapped));
+
+			if (current != null) return current;
+			/* If current is null here, then either:
+				1) Ours was used. https://msdn.microsoft.com/en-us/library/system.web.caching.cache.add(v=vs.110).aspx
+				2) There is no HttpRuntime.Cache available.
+				3) There is a value/type collision that will trigger Debug.Fail but not be fatal otherwise. */
+
+			// We own the task.  Go ahead and run it.
+			task.Start();
+
+			return unwrapped;
+		}
+
 
 		public Task<T> GetOrAddAsync<T>(string key, Func<T> factory, bool runSynchronously = false)
 		{
