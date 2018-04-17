@@ -32,15 +32,15 @@ namespace Open.Caching.Web
 			set => Policy.Insert(Key, value);
 		}
 
-		public void Insert(object value, CacheDependency dependencies = null, CacheItemRemovedCallback callback = null)
-			=> Policy.Insert(Key, value, dependencies, callback);
-		public void Insert(object value, CacheItemRemovedCallback callback)
-			=> Insert(value, null, callback);
+		public void Insert(T value, CacheDependency dependencies = null, CacheItemRemovedCallback callback = null)
+		    => Policy.Insert(Key, value, dependencies, callback);
+		public void Insert(T value, CacheItemRemovedCallback callback)
+		    => Insert(value, null, callback);
 
-		public object Add(object value, CacheDependency dependencies = null, CacheItemRemovedCallback callback = null)
-			=> Policy.Add(Key, value, dependencies, callback);
-		public object Add(object value, CacheItemRemovedCallback callback)
-			=> Add(value, null, callback);
+		public object Add(T value, CacheDependency dependencies = null, CacheItemRemovedCallback callback = null)
+		    => Policy.Add(Key, value, dependencies, callback);
+		public object Add(T value, CacheItemRemovedCallback callback)
+		    => Add(value, null, callback);
 
 
 		public T GetOrAdd(Func<T> factory) => Policy.GetOrAdd(Key, factory);
