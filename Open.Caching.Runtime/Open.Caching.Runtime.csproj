@@ -41,9 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ObjectCachePolicy.cs" />
+    <Compile Include="ObjectCacheHelper.cs" />
     <Compile Include="CacheItemPolicyExtensions.cs" />
-    <Compile Include="ObjectCacheExtensions.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

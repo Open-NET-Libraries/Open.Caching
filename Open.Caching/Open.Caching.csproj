@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>2.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>electricessence</Authors>
+    <Company>electricessence</Company>
+    <Description>.NET Standard library for providing async-friendly simplified standardized expressive interfaces and base classes for working with different cache implemenations.
+
+Part of the "Open" set of libraries.</Description>
+    <PackageReleaseNotes />
+    <PackageTags>dotnet, dotnetcore, caching, expressive</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/electricessence/Open.Caching/</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/electricessence/Open.Caching/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>https://github.com/electricessence/Open.Caching/blob/master/LICENSE</Copyright>
+    <PackageProjectUrl>https://github.com/electricessence/Open.Caching/</PackageProjectUrl>
   </PropertyGroup>
 
 </Project>

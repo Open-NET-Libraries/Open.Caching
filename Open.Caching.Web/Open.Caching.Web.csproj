@@ -41,8 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachingPolicy.cs" />
-    <Compile Include="CachingPolicyEntry.cs" />
+    <Compile Include="WebCacheEntryOptions.cs" />
+    <Compile Include="WebCacheHelper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
