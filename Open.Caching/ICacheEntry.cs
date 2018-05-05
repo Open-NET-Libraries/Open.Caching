@@ -14,6 +14,5 @@ namespace Open.Caching
 		T GetOrAdd(Func<T> factory);
 		T GetOrDefault(T defaultValue);
 	}
-	
-}
 
+}

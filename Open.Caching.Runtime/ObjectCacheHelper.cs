@@ -14,7 +14,7 @@ namespace Open.Caching.Runtime
 			ExpirationMode mode,
 			TimeSpan expiresAfter,
 			CacheItemPriority priority)
-			:base(mode, expiresAfter, priority)
+			: base(mode, expiresAfter, priority)
 		{
 			Cache = target ?? throw new ArgumentNullException(nameof(target));
 		}

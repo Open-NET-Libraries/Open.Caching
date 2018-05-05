@@ -58,7 +58,7 @@ namespace Open.Caching
 
 			// The .Add implementations can take 2 forms: Returns the previous value, or the current value.
 			// Either way, if it's null or equals our task, then we need to start the task.
-			if(current==null || current==task)
+			if (current == null || current == task)
 			{
 				// We own the task.  Go ahead and run it.
 				if (runSynchronously) task.RunSynchronously();
