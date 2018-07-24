@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
 namespace Open.Caching
 {
+	[SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
+	[SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter")]
 	public abstract class CachePolicyBase<TOptions, TPolicy> : ICachePolicy<TPolicy>, ICacheHelper<TOptions>
 		where TPolicy : CachePolicyBase<TOptions, TPolicy>
 		where TOptions : class
@@ -25,16 +28,23 @@ namespace Open.Caching
 			set => Insert(key, value);
 		}
 
-		public ExpirationMode Mode { get; private set; }
-		public TimeSpan ExpiresAfter { get; private set; }
+		public ExpirationMode Mode { get; }
+		public TimeSpan ExpiresAfter { get; }
 
 		public abstract TPolicy Create(ExpirationMode mode, TimeSpan expiresAfter);
 
 		protected static Task<T> ReturnAsTask<T>(object value)
 		{
-			if (value == null) return null;
-			if (value is Task<T> task) return task;
-			if (value is T v) return Task.FromResult(v);
+			switch (value)
+			{
+				case null:
+					return null;
+				case Task<T> task:
+					return task;
+				case T v:
+					return Task.FromResult(v);
+			}
+
 			Debug.Fail("Actual type does not match expected for cache entry.");
 			return null;
 		}
@@ -99,7 +109,7 @@ namespace Open.Caching
 		public T GetOrAdd<T>(string key, Func<T> factory, Func<TOptions> options = null)
 			=> GetOrAddAsync(key, factory, true, options).Result;
 
-		public ICacheEntry<T> Entry<T>(string key, T defaultValue = default(T))
+		public ICacheEntry<T> Entry<T>(string key, T defaultValue = default)
 			=> new CacheEntry<T>(this, key, defaultValue);
 
 		void ICacheHelper.Insert<T>(string key, T value)
@@ -146,7 +156,7 @@ namespace Open.Caching
 			Priority = priority;
 		}
 
-		public TPriority Priority { get; private set; }
+		public TPriority Priority { get; }
 		public abstract TPolicy Create(ExpirationMode mode, TimeSpan expiresAfter, TPriority priority);
 	}
 }

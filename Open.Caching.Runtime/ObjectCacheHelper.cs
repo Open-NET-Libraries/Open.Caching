@@ -40,7 +40,7 @@ namespace Open.Caching.Runtime
 			=> new ObjectCacheHelper(Cache, mode, expiresAfter, priority);
 
 		public override ObjectCacheHelper Create(ExpirationMode mode, TimeSpan expiresAfter)
-			=> new ObjectCacheHelper(Cache, mode, expiresAfter, this.Priority);
+			=> new ObjectCacheHelper(Cache, mode, expiresAfter, Priority);
 
 		public override object Get(string key) => Cache.Get(key);
 

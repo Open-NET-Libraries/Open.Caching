@@ -24,7 +24,7 @@ namespace Open.Caching.Web
 			=> new WebCacheHelper(Cache, mode, expiresAfter, priority);
 
 		public override WebCacheHelper Create(ExpirationMode mode, TimeSpan expiresAfter)
-			=> new WebCacheHelper(Cache, mode, expiresAfter, this.Priority);
+			=> new WebCacheHelper(Cache, mode, expiresAfter, Priority);
 
 		public override object Get(string key) => Cache.Get(key);
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Web.Caching;
+﻿using System.Web.Caching;
 
 namespace Open.Caching.Web
 {

@@ -2,7 +2,7 @@
 
 namespace Open.Caching
 {
-	public interface ICachePolicy<TPolicy>
+	public interface ICachePolicy<out TPolicy>
 		where TPolicy : ICachePolicy<TPolicy>
 	{
 		ExpirationMode Mode { get; }
@@ -11,7 +11,7 @@ namespace Open.Caching
 		TPolicy Create(ExpirationMode mode, TimeSpan ExpiresAfter);
 	}
 
-	public interface ICachePolicy<TPriority, TPolicy> : ICachePolicy<TPolicy>
+	public interface ICachePolicy<TPriority, out TPolicy> : ICachePolicy<TPolicy>
 		where TPolicy : ICachePolicy<TPriority, TPolicy>
 	{
 		TPriority Priority { get; }

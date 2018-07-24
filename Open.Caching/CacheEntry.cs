@@ -1,16 +1,16 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Open.Caching
 {
 	public class CacheEntry<T> : ICacheEntry<T>
 	{
-		public string Key { get; private set; }
-		public T DefaultValue { get; private set; }
+		public string Key { get; }
+		public T DefaultValue { get; }
 
 		public readonly ICacheHelper Policy;
 
-		public CacheEntry(ICacheHelper policy, string key, T defaultValue = default(T))
+		public CacheEntry(ICacheHelper policy, string key, T defaultValue = default)
 		{
 			Policy = policy;
 			Key = key ?? throw new ArgumentNullException(nameof(key));

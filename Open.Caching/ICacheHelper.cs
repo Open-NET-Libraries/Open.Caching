@@ -16,7 +16,7 @@ namespace Open.Caching
 		T GetOrAdd<T>(string key, Func<T> factory);
 	}
 
-	public interface ICacheHelper<TOptions> : ICacheHelper
+	public interface ICacheHelper<in TOptions> : ICacheHelper
 		where TOptions : class
 	{
 		void Insert<T>(string key, T value, TOptions options);

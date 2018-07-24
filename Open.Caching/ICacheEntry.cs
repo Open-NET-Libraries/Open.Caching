@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace Open.Caching
 {
+	[SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
 	public interface ICacheEntry<T>
 	{
 		bool HasValue { get; }
