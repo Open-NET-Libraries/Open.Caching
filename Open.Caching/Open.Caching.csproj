@@ -1,29 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.0</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>electricessence</Authors>
-    <Company>electricessence</Company>
-    <Description>.NET Standard library for providing async-friendly simplified standardized expressive interfaces and base classes for working with different cache implemenations.
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Authors>electricessence</Authors>
+		<Description>
+			.NET Standard library for providing async-friendly simplified standardized expressive interfaces and base classes for working with different cache implemenations.
 
-Part of the "Open" set of libraries.</Description>
-    <PackageReleaseNotes />
-    <PackageTags>dotnet, dotnetcore, caching, expressive</PackageTags>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/electricessence/Open.Caching/</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/electricessence/Open.Caching/blob/master/LICENSE</PackageLicenseUrl>
-    <Copyright>https://github.com/electricessence/Open.Caching/blob/master/LICENSE</Copyright>
-    <PackageProjectUrl>https://github.com/electricessence/Open.Caching/</PackageProjectUrl>
-  </PropertyGroup>
+			Part of the "Open" set of libraries.
+		</Description>
+		<PackageTags>caching;expressive</PackageTags>
+		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
+		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Caching/</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
+		<Version>2.1.0</Version>
+		<PackageReleaseNotes></PackageReleaseNotes>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageIcon>logo.png</PackageIcon>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+	</ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
+	<ItemGroup>
+		<None Include="..\logo.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

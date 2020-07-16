@@ -40,7 +40,7 @@ namespace Open.Caching
 		=> After(policy, TimeSpan.FromSeconds(seconds));
 
 		public static TPolicy WithPriority<TPolicy, TPriority>(this TPolicy policy, TPriority priority) where TPolicy : ICachePolicy<TPriority, TPolicy>
-		=> policy.Priority.Equals(priority)
+		=> policy.Priority!.Equals(priority)
 			? policy
 			: policy.Create(policy.Mode, policy.ExpiresAfter, priority);
 	}

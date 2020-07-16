@@ -22,7 +22,7 @@ namespace Open.Caching
 		public T Value
 		{
 			get => GetOrDefault(DefaultValue);
-			set => Policy[Key] = value;
+			set => Policy[Key] = value!;
 		}
 
 		public Task<T> GetOrAddAsync(Func<T> factory, bool runSynchronously)
@@ -38,7 +38,7 @@ namespace Open.Caching
 		{
 			var v = Policy[Key];
 			if (v is T typed) return typed;
-			if (v == null) return defaultValue;
+			if (v is null) return defaultValue;
 			throw new Exception($"Unexpected type: {v.GetType()} instead of expected: {typeof(T)}");
 		}
 	}

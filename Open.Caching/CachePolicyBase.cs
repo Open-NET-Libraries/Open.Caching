@@ -33,12 +33,12 @@ namespace Open.Caching
 
 		public abstract TPolicy Create(ExpirationMode mode, TimeSpan expiresAfter);
 
-		protected static Task<T> ReturnAsTask<T>(object value)
+		protected static Task<T>? ReturnAsTask<T>(object value)
 		{
 			switch (value)
 			{
 				case null:
-					return null;
+					return default;
 				case Task<T> task:
 					return task;
 				case T v:
@@ -46,15 +46,15 @@ namespace Open.Caching
 			}
 
 			Debug.Fail("Actual type does not match expected for cache entry.");
-			return null;
+			return default;
 		}
 
 		public abstract object Get(string key);
 
-		public abstract object Add<T>(string key, T value, TOptions options = null);
-		public abstract void Insert<T>(string key, T value, TOptions options = null);
+		public abstract object Add<T>(string key, T value, TOptions? options = default);
+		public abstract void Insert<T>(string key, T value, TOptions? options = default);
 
-		public Task<T> GetOrAddAsync<T>(string key, Func<T> factory, bool runSynchronously, Func<TOptions> options = null)
+		public Task<T> GetOrAddAsync<T>(string key, Func<T> factory, bool runSynchronously, Func<TOptions>? options = default)
 		{
 			// Check if task/value exists first.
 			var current = ReturnAsTask<T>(Get(key));
@@ -68,7 +68,7 @@ namespace Open.Caching
 
 			// The .Add implementations can take 2 forms: Returns the previous value, or the current value.
 			// Either way, if it's null or equals our task, then we need to start the task.
-			if (current == null || current == task)
+			if (current is null || current == task)
 			{
 				// We own the task.  Go ahead and run it.
 				if (runSynchronously) task.RunSynchronously();
@@ -80,7 +80,7 @@ namespace Open.Caching
 			return current;
 		}
 
-		public Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> factory, Func<TOptions> options = null)
+		public Task<T> GetOrAddAsync<T>(string key, Func<Task<T>> factory, Func<TOptions>? options = default)
 		{
 			// Check if task/value exists first.
 			var current = ReturnAsTask<T>(Get(key));
@@ -95,7 +95,7 @@ namespace Open.Caching
 
 			// The .Add implementations can take 2 forms: Returns the previous value, or the current value.
 			// Either way, if it's null or equals our task, then we need to start the task.
-			if (current == null || current == unwrapped)
+			if (current is null || current == unwrapped)
 			{
 				// We own the task.  Go ahead and run it.
 				task.Start();
@@ -106,7 +106,7 @@ namespace Open.Caching
 			return current;
 		}
 
-		public T GetOrAdd<T>(string key, Func<T> factory, Func<TOptions> options = null)
+		public T GetOrAdd<T>(string key, Func<T> factory, Func<TOptions>? options = default)
 			=> GetOrAddAsync(key, factory, true, options).Result;
 
 		public ICacheEntry<T> Entry<T>(string key, T defaultValue = default)

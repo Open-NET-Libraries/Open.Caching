@@ -20,8 +20,8 @@ namespace Open.Caching.Runtime
 		}
 
 		public CacheItemPolicy GetItemPolicy(
-				CacheEntryUpdateCallback updateCallback = null,
-				CacheEntryRemovedCallback removedCallback = null)
+				CacheEntryUpdateCallback? updateCallback = default,
+				CacheEntryRemovedCallback? removedCallback = default)
 			=> new CacheItemPolicy
 			{
 				AbsoluteExpiration = ExpiresAbsolute,
@@ -33,7 +33,7 @@ namespace Open.Caching.Runtime
 
 		public CacheItemPolicy GetItemPolicy(
 				CacheEntryRemovedCallback removedCallback,
-				CacheEntryUpdateCallback updateCallback = null)
+				CacheEntryUpdateCallback? updateCallback = default)
 			=> GetItemPolicy(updateCallback, removedCallback);
 
 		public override ObjectCacheHelper Create(ExpirationMode mode, TimeSpan expiresAfter, CacheItemPriority priority)
@@ -44,21 +44,21 @@ namespace Open.Caching.Runtime
 
 		public override object Get(string key) => Cache.Get(key);
 
-		public override object Add<T>(string key, T value, CacheItemPolicy options = null)
+		public override object Add<T>(string key, T value, CacheItemPolicy? options = default)
 			=> Cache.AddOrGetExisting(key, value, options ?? GetItemPolicy());
 
-		public override void Insert<T>(string key, T value, CacheItemPolicy options = null)
+		public override void Insert<T>(string key, T value, CacheItemPolicy? options = default)
 			=> Cache.Set(key, value, options ?? GetItemPolicy());
 
-		public object Add<T>(string key, T value, CacheEntryUpdateCallback updateCallback, CacheEntryRemovedCallback removedCallback = null)
+		public object Add<T>(string key, T value, CacheEntryUpdateCallback updateCallback, CacheEntryRemovedCallback? removedCallback = default)
 			=> Add(key, value, GetItemPolicy(updateCallback, removedCallback));
-		public object Add<T>(string key, T value, CacheEntryRemovedCallback removedCallback, CacheEntryUpdateCallback updateCallback = null)
-			=> Add(key, value, updateCallback, removedCallback);
+		public object Add<T>(string key, T value, CacheEntryRemovedCallback removedCallback, CacheEntryUpdateCallback? updateCallback = default)
+			=> Add(key, value, GetItemPolicy(updateCallback, removedCallback));
 
-		public void Insert<T>(string key, T value, CacheEntryUpdateCallback updateCallback, CacheEntryRemovedCallback removedCallback = null)
+		public void Insert<T>(string key, T value, CacheEntryUpdateCallback updateCallback, CacheEntryRemovedCallback? removedCallback = default)
 			=> Insert(key, value, GetItemPolicy(updateCallback, removedCallback));
-		public void Insert<T>(string key, T value, CacheEntryRemovedCallback removedCallback, CacheEntryUpdateCallback updateCallback = null)
-			=> Insert(key, value, updateCallback, removedCallback);
+		public void Insert<T>(string key, T value, CacheEntryRemovedCallback removedCallback, CacheEntryUpdateCallback? updateCallback = default)
+			=> Insert(key, value, GetItemPolicy(updateCallback, removedCallback));
 	}
 
 }
