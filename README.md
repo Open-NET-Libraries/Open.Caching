@@ -1,2 +1,3 @@
 # Open.Caching
-Useful set of utilites and extensions for simplifying cache usage.
+
+Useful set of utilities and extensions for simplifying cache usage.
