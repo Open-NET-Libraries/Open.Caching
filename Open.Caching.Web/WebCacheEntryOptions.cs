@@ -1,10 +1,9 @@
 ﻿using System.Web.Caching;
 
-namespace Open.Caching.Web
+namespace Open.Caching.Web;
+
+public class WebCacheEntryOptions
 {
-	public class WebCacheEntryOptions
-	{
-		public CacheDependency Dependency;
-		public CacheItemRemovedCallback CacheItemRemovedCallback;
-	}
+	public CacheDependency Dependency;
+	public CacheItemRemovedCallback CacheItemRemovedCallback;
 }
