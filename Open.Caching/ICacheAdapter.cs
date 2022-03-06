@@ -150,7 +150,6 @@ public static class CacheAdapterExtensions
 			cache.Remove(key); // Fail safe.
 			throw;
 		}
-
 	}
 
 	/// <summary>
