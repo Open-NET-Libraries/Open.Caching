@@ -1,34 +1,37 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿namespace Open.Caching;
 
-namespace Open.Caching;
-
-public class CacheItemFactory<TKey>
+public abstract class CacheItemFactoryBase<TKey>
 {
-	readonly ICacheAdapter<TKey> Cache;
-	public CacheItemFactory(ICacheAdapter<TKey> cache)
-		=> Cache = cache ?? throw new ArgumentNullException(nameof(cache));
+	protected abstract ICacheAdapter<TKey> CacheAdapter { get; }
 
 	public CacheItem<TKey, TValue> CreateItem<TValue>(TKey key, TValue defaultValue = default!)
-		=> new(Cache, key, defaultValue);
+		=> new(CacheAdapter, key, defaultValue);
 
 	public LazyCacheItem<TKey, TValue> CreateLazyItem<TValue>(
 		TKey key,
 		Func<TValue> factory)
-		=> new(Cache, key, factory);
+		=> new(CacheAdapter, key, factory);
 
 	public LazyCacheItem<TKey, TValue> CreateLazyItem<TValue>(
 		TKey key,
 		Func<TKey, TValue> factory)
-		=> new(Cache, key, factory);
+		=> new(CacheAdapter, key, factory);
 
 	public AsyncLazyCacheItem<TKey, TValue> CreateAsyncLazyItem<TValue>(
 		TKey key,
 		Func<Task<TValue>> factory)
-		=> new(Cache, key, factory);
+		=> new(CacheAdapter, key, factory);
 
 	public AsyncLazyCacheItem<TKey, TValue> CreateAsyncLazyItem<TValue>(
 		TKey key,
 		Func<TKey, Task<TValue>> factory)
-		=> new(Cache, key, factory);
+		=> new(CacheAdapter, key, factory);
+}
+
+public class CacheItemFactory<TKey> : CacheItemFactoryBase<TKey>
+{
+	protected override ICacheAdapter<TKey> CacheAdapter { get; }
+
+	public CacheItemFactory(ICacheAdapter<TKey> cache)
+		=> CacheAdapter = cache ?? throw new ArgumentNullException(nameof(cache));
 }

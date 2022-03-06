@@ -2,22 +2,24 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
 		<Authors>electricessence</Authors>
 		<Description>
 			.NET Standard library for providing async-friendly simplified standardized expressive interfaces and base classes for working with different cache implemenations.
 
 			Part of the "Open" set of libraries.
 		</Description>
-		<PackageTags>caching;expressive</PackageTags>
+		<PackageTags>caching; adapter; factory; expressive</PackageTags>
 		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Caching/</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>2.1.0</Version>
+		<Version>3.0.0-alpha</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -29,7 +31,6 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-		<PackageReference Include="Open.Disposable" Version="2.5.2" />
 		<PackageReference Include="Open.Lazy.Extensions" Version="1.2.0" />
 	</ItemGroup>
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
 namespace Open.Caching;
 
@@ -97,7 +95,8 @@ public class AsyncLazyCacheItem<TKey, TValue> : CacheItemBase<TKey, TValue>
 }
 
 public static class AsyncLazyCacheItemExtensions
-{	public static TaskAwaiter<TValue> GetAwaiter<TKey, TValue>(
+{
+	public static TaskAwaiter<TValue> GetAwaiter<TKey, TValue>(
 		this AsyncLazyCacheItem<TKey, TValue> item)
 		=> item.Value.GetAwaiter();
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Open.Caching;
+﻿namespace Open.Caching;
 
 public readonly record struct ExpirationPolicy
 {
