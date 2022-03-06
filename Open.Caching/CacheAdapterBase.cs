@@ -1,4 +1,4 @@
-﻿namespace Open.Caching.Memory;
+﻿namespace Open.Caching;
 
 public abstract class CacheAdapterBase<TKey, TCache>
 	: ICacheAdapter<TKey>, ICachePolicyProvider<TKey, ExpirationPolicy>
@@ -9,18 +9,23 @@ public abstract class CacheAdapterBase<TKey, TCache>
 		=> Cache = cache ?? throw new ArgumentNullException(nameof(cache));
 
 	protected CacheAdapterBase(CacheAdapterBase<TKey, TCache> parent)
-		: this((parent ?? throw new ArgumentNullException(nameof(parent))).Cache)
-	{
-	}
+		: this((parent ?? throw new ArgumentNullException(nameof(parent))).Cache) { }
 
+	/// <inheritdoc />
 	public abstract bool TryGetValue<TValue>(TKey key, out TValue item, bool throwIfUnexpectedType = false);
 
+	/// <inheritdoc />
 	public abstract void Set<TValue>(TKey key, TValue item);
 
+	/// <inheritdoc cref="Set{TValue}(TKey, TValue)" />
 	public abstract void Set<TValue>(TKey key, TValue item, ExpirationPolicy policy);
 
+	/// <inheritdoc />
 	public abstract void Remove(TKey key);
 
+	/// <summary>
+	/// Creates a cache adapter that defaults all expiration to the provided policy.
+	/// </summary>
 	public virtual ICacheAdapter<TKey> Policy(ExpirationPolicy policy)
 		=> policy == default ? this : new CacheExpirationPolicy(this, policy);
 
