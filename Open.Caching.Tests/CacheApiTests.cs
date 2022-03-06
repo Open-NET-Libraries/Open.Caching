@@ -7,10 +7,9 @@ public class CacheApiTests
 	readonly IMemoryCache Cache
 		= new MemoryCache(new MemoryCacheOptions());
 
-    [Fact]
-    public void MemoryCacheVerify()
-    {
-		Cache.Get
+	[Fact]
+	public void MemoryCacheVerify()
+	{
 		var key = new object();
 		using (var entry = Cache
 			.CreateEntry(key)
