@@ -1,13 +1,21 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace Open.Caching.Memory;
-public class MemoryCacheAdapter<TKey> : ICacheAdapter<TKey>
+
+/// <summary>
+/// <see cref="IMemoryCache"/> adapter with <see cref="CacheItemFactory{TKey}"/> functionality for simplifying cache item access.
+/// Use <see cref="MemoryCacheAdapter{TKey}.ExpirationPolicyProvider"/> to generate adapters with expiration behaviors.
+/// </summary>
+public class MemoryCacheAdapter<TKey> : CacheItemFactoryBase<TKey>, ICacheAdapter<TKey>
 {
 	public IMemoryCache Cache { get; }
+
+	protected override ICacheAdapter<TKey> CacheAdapter { get; }
 
 	public MemoryCacheAdapter(IMemoryCache cache)
 	{
 		Cache = cache ?? throw new ArgumentNullException(nameof(cache));
+		CacheAdapter = this;
 	}
 
 	public void Remove(TKey key)
@@ -38,7 +46,6 @@ public class MemoryCacheAdapter<TKey> : ICacheAdapter<TKey>
 		item = default!;
 		return false;
 	}
-
 	class MemoryCacheExpirationPolicy : MemoryCacheAdapter<TKey>
 	{
 		public ExpirationPolicy Expiration;
