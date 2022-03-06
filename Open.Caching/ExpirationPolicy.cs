@@ -7,6 +7,9 @@ public readonly record struct ExpirationPolicy
 	public TimeSpan Absolute { get; }
 	public TimeSpan Sliding { get; }
 
+	public DateTimeOffset AbsoluteRelativeToNow
+		=> DateTimeOffset.Now + Absolute;
+
 	public ExpirationPolicy(TimeSpan absolute, TimeSpan sliding)
 	{
 		if (absolute < TimeSpan.Zero)
