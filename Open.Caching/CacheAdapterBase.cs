@@ -3,7 +3,7 @@
 public abstract class CacheAdapterBase<TKey, TCache>
 	: ICacheAdapter<TKey>, ICachePolicyProvider<TKey, ExpirationPolicy>
 {
-	private readonly TCache Cache;
+	public TCache Cache { get; }
 
 	protected CacheAdapterBase(TCache cache)
 		=> Cache = cache ?? throw new ArgumentNullException(nameof(cache));
