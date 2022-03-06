@@ -46,11 +46,11 @@ public class MemoryCacheAdapter<TKey> : CacheItemFactoryBase<TKey>, ICacheAdapte
 		item = default!;
 		return false;
 	}
-	class MemoryCacheExpirationPolicy : MemoryCacheAdapter<TKey>
+	class CacheExpirationPolicy : MemoryCacheAdapter<TKey>
 	{
 		public ExpirationPolicy Expiration;
 
-		public MemoryCacheExpirationPolicy(
+		public CacheExpirationPolicy(
 			IMemoryCache cache,
 			ExpirationPolicy policy)
 			: base(cache)
@@ -75,6 +75,6 @@ public class MemoryCacheAdapter<TKey> : CacheItemFactoryBase<TKey>, ICacheAdapte
 		public ExpirationPolicyProvider(IMemoryCache cache) : base(cache) { }
 
 		public ICacheAdapter<TKey> Policy(ExpirationPolicy policy)
-			=> policy == default ? this : new MemoryCacheExpirationPolicy(Cache, policy);
+			=> policy == default ? this : new CacheExpirationPolicy(Cache, policy);
 	}
 }

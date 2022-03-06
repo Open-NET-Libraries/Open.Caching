@@ -1,18 +1,18 @@
-﻿using System.Runtime.Caching;
+﻿using System.Web.Caching;
 
-namespace Open.Caching.Memory;
+namespace Open.Caching.Web;
 
 /// <summary>
-/// <see cref="ObjectCache"/> adapter with <see cref="CacheItemFactory{string}"/> functionality for simplifying cache item access.
-/// Use <see cref="ObjectCacheAdapter.ExpirationPolicyProvider"/> to generate adapters with expiration behaviors.
+/// <see cref="System.Web.Caching.Cache"/> adapter with <see cref="CacheItemFactory{string}"/> functionality for simplifying cache item access.
+/// Use <see cref="WebCacheAdapter.ExpirationPolicyProvider"/> to generate adapters with expiration behaviors.
 /// </summary>s
-public class ObjectCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<string>
+public class WebCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<string>
 {
-	public ObjectCache Cache { get; }
+	public Cache Cache { get; }
 
 	protected override ICacheAdapter<string> CacheAdapter { get; }
 
-	public ObjectCacheAdapter(ObjectCache cache)
+	public WebCacheAdapter(Cache cache)
 	{
 		Cache = cache ?? throw new ArgumentNullException(nameof(cache));
 		CacheAdapter = this;
@@ -45,12 +45,12 @@ public class ObjectCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<st
 		return false;
 	}
 
-	class CacheExpirationPolicy : ObjectCacheAdapter
+	class CacheExpirationPolicy : WebCacheAdapter
 	{
 		public ExpirationPolicy Expiration;
 
 		public CacheExpirationPolicy(
-			ObjectCache cache,
+			Cache cache,
 			ExpirationPolicy policy)
 			: base(cache)
 		{
@@ -58,26 +58,15 @@ public class ObjectCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<st
 		}
 
 		public override void Set<TValue>(string key, TValue item)
-		{
-			if (Expiration.Sliding == TimeSpan.Zero && Expiration.Absolute != TimeSpan.Zero)
-			{
-				Cache.Set(key, item, Expiration.AbsoluteRelativeToNow);
-				return;
-			}
-
-			var policy = new CacheItemPolicy();
-			if (Expiration.Absolute != TimeSpan.Zero)
-				policy.AbsoluteExpiration = Expiration.AbsoluteRelativeToNow;
-			if (Expiration.Sliding != TimeSpan.Zero)
-				policy.SlidingExpiration = Expiration.Sliding;
-			Cache.Set(key, item, policy);
-		}
+			=> Cache.Insert(key, item, null,
+				Expiration.Absolute == TimeSpan.Zero ? Cache.NoAbsoluteExpiration : Expiration.AbsoluteRelativeToNow.DateTime,
+				Expiration.Sliding);
 	}
 
 	public class ExpirationPolicyProvider
-		: ObjectCacheAdapter, ICachePolicyProvider<string, ExpirationPolicy>
+		: WebCacheAdapter, ICachePolicyProvider<string, ExpirationPolicy>
 	{
-		public ExpirationPolicyProvider(ObjectCache cache) : base(cache) { }
+		public ExpirationPolicyProvider(Cache cache) : base(cache) { }
 
 		public ICacheAdapter<string> Policy(ExpirationPolicy policy)
 			=> policy == default ? this : new CacheExpirationPolicy(Cache, policy);
