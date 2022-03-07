@@ -27,7 +27,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Open.Caching" Version="3.0.0-alpha8" />
+		<PackageReference Include="Open.Caching" Version="3.0.0-alpha9" />
 	</ItemGroup>
 
 	<ItemGroup>

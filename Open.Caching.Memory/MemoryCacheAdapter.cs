@@ -42,9 +42,9 @@ public class MemoryCacheAdapter<TKey>
 	public override void Set<TValue>(TKey key, TValue item, ExpirationPolicy expiration)
 	{
 		using var cacheItem = Cache.CreateEntry(key);
-		if (expiration.Absolute != TimeSpan.Zero && expiration.Absolute != TimeSpan.MaxValue)
+		if (expiration.HasAbsolute)
 			cacheItem.AbsoluteExpirationRelativeToNow = expiration.Absolute;
-		if (expiration.Sliding != TimeSpan.Zero)
+		if (expiration.HasSliding)
 			cacheItem.SlidingExpiration = expiration.Sliding;
 		cacheItem.Value = item;
 	}

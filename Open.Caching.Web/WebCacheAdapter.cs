@@ -21,7 +21,7 @@ public class WebCacheAdapter
 	/// <inheritdoc />
 	public override void Set<TValue>(string key, TValue item, ExpirationPolicy expiration)
 		=> Cache.Insert(key, item, null,
-			expiration.Absolute == TimeSpan.Zero ? Cache.NoAbsoluteExpiration : expiration.AbsoluteRelativeToNow.DateTime,
+			expiration.HasSliding ? expiration.AbsoluteRelativeToNow.DateTime : Cache.NoAbsoluteExpiration,
 			expiration.Sliding);
 
 	/// <inheritdoc />

@@ -28,9 +28,9 @@ public class ObjectCacheAdapter
 		}
 
 		var policy = new CacheItemPolicy();
-		if (expiration.Absolute != TimeSpan.Zero && expiration.Absolute != TimeSpan.MaxValue)
+		if (expiration.HasAbsolute)
 			policy.AbsoluteExpiration = expiration.AbsoluteRelativeToNow;
-		if (expiration.Sliding != TimeSpan.Zero)
+		if (expiration.HasSliding)
 			policy.SlidingExpiration = expiration.Sliding;
 		Cache.Set(key, item, policy);
 	}
