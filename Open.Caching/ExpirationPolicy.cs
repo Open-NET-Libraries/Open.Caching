@@ -7,8 +7,13 @@ public readonly record struct ExpirationPolicy
 	public TimeSpan Absolute { get; }
 	public TimeSpan Sliding { get; }
 
+	public bool HasAbsolute => Absolute != TimeSpan.Zero;
+	public bool HasSliding => Sliding != TimeSpan.Zero;
+
 	public DateTimeOffset AbsoluteRelativeToNow
-		=> DateTimeOffset.Now + Absolute;
+		=> Absolute==TimeSpan.Zero
+		? DateTimeOffset.MaxValue
+		: DateTimeOffset.Now + Absolute;
 
 	public ExpirationPolicy(TimeSpan absolute, TimeSpan sliding)
 	{
@@ -28,16 +33,14 @@ public readonly record struct ExpirationPolicy
 
 public static class Expire
 {
-	public static readonly ExpirationPolicy Never = new(TimeSpan.MaxValue, TimeSpan.MaxValue);
-
 	public static ExpirationPolicy Policy(TimeSpan absolute, TimeSpan sliding)
 		=> new(absolute, sliding);
 
 	public static ExpirationPolicy Absolute(TimeSpan value)
-		=> new(value, TimeSpan.MaxValue);
+		=> new(value, TimeSpan.Zero);
 
 	public static ExpirationPolicy Sliding(TimeSpan value)
-		=> new(TimeSpan.MaxValue, value);
+		=> new(TimeSpan.Zero, value);
 
 	public static bool IsValidSliding(TimeSpan? slide)
 	=> !slide.HasValue || IsValidSliding(slide.Value);

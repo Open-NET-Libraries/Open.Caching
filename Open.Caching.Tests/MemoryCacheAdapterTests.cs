@@ -24,13 +24,29 @@ public class MemoryCacheAdapterTests
 	}
 
 	[Fact]
-	public void ExpireTest()
+	public void ExpireAbsoluteTest()
 	{
 		var policy = Cache.ExpireAfter(TimeSpan.FromSeconds(1));
 
 		var item = policy.CreateItem("hello", 0);
 		item.Value = 10;
 		Assert.Equal(10, item.Value);
+		Thread.Sleep(2000);
+		Assert.Equal(0, item.Value);
+	}
+
+	[Fact]
+	public void ExpireSlideTest()
+	{
+		var policy = Cache.Slide(TimeSpan.FromSeconds(1));
+		var item = policy.CreateItem("hello", 0);
+		item.Value = 10;
+
+		for(var i = 0; i < 10; i++)
+		{
+			Thread.Sleep(500);
+			Assert.Equal(10, item.Value);
+		}
 		Thread.Sleep(2000);
 		Assert.Equal(0, item.Value);
 	}

@@ -22,10 +22,13 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Open.Caching" Version="3.0.0-alpha8" />
+		<PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -33,11 +36,10 @@
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Open.Caching" Version="3.0.0-alpha8" />
-		<PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 </Project>

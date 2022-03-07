@@ -6,24 +6,34 @@ Useful set of DI/IoC agnostic interfaces, utilities and extensions for simplifyi
 
 With the following libraries, you can build other libraries that sever their dependency from any cache and allow you to inject whichever you want.
 
-### Core Interfaces & Extensions
+---
 
-[https://www.nuget.org/packages/Open.Cache](https://www.nuget.org/packages/Open.Cache/)  
-[![NuGet](https://img.shields.io/nuget/v/Open.Cache.svg)](https://www.nuget.org/packages/Open.Cache/) Core package for interfaces and base classes.
+## Core Interfaces & Extensions
 
-[https://www.nuget.org/packages/Open.Cache.Memory](https://www.nuget.org/packages/Open.Cache.Memory/)  
+### Open.Caching
 
-### Library/Vendor Specific Implementations
+[https://www.nuget.org/packages/Open.Caching](https://www.nuget.org/packages/Open.Caching/)  
+[![NuGet](https://img.shields.io/nuget/v/Open.Caching.svg)](https://www.nuget.org/packages/Open.Caching/) Core package for interfaces and base classes.
 
-[https://www.nuget.org/packages/Open.Cache.Memory](https://www.nuget.org/packages/Open.Cache.Memory/)  
-[![NuGet](https://img.shields.io/nuget/v/Open.Cache.Memory.svg)](https://www.nuget.org/packages/Open.Cache.Memory/) Contains `MemoryCacheAdapter` for use with any `IMemoryCache`.
+## Library/Vendor Specific Implementations
 
-[https://www.nuget.org/packages/Open.Cache.Runtime](https://www.nuget.org/packages/Open.Cache.Runtime/)  
-[![NuGet](https://img.shields.io/nuget/v/Open.Cache.Runtime.svg)](https://www.nuget.org/packages/Open.Cache.Runtime/) Contains `ObjectCacheAdapter` for use with any `System.Runtime.Caching.ObjectCache`.
+### Open.Caching.Memory
 
-[https://www.nuget.org/packages/Open.Cache.Web](https://www.nuget.org/packages/Open.Cache.Web/)  
-[![NuGet](https://img.shields.io/nuget/v/Open.Cache.Web.svg)](https://www.nuget.org/packages/Open.Cache.Web/) Contains `WebCacheAdapter` for use with any `System.Web.Caching.Cache`.  
+[https://www.nuget.org/packages/Open.Caching.Memory](https://www.nuget.org/packages/Open.Caching.Memory/)  
+[![NuGet](https://img.shields.io/nuget/v/Open.Caching.Memory.svg)](https://www.nuget.org/packages/Open.Caching.Memory/) Contains `MemoryCacheAdapter` for use with any `IMemoryCache`.
+
+### Open.Caching.Runtime
+
+[https://www.nuget.org/packages/Open.Caching.Runtime](https://www.nuget.org/packages/Open.Caching.Runtime/)  
+[![NuGet](https://img.shields.io/nuget/v/Open.Caching.Runtime.svg)](https://www.nuget.org/packages/Open.Caching.Runtime/) Contains `ObjectCacheAdapter` for use with any `System.Runtime.Caching.ObjectCache`.
+
+### Open.Caching.Web
+
+[https://www.nuget.org/packages/Open.Caching.Web](https://www.nuget.org/packages/Open.Caching.Web/)  
+[![NuGet](https://img.shields.io/nuget/v/Open.Caching.Web.svg)](https://www.nuget.org/packages/Open.Caching.Web/) Contains `WebCacheAdapter` for use with any `System.Web.Caching.Cache`.  
 Useful when attempting to transition code away from legacy ASP.NET.
+
+---
 
 ## Notable Similarities &amp; Differences
 
@@ -33,11 +43,13 @@ Every cache implementation listed handles absolute and sliding expiration.
 
 ## Not Yet Supported
 
-Some of the reasons for not supporting certain features should be obvious. The intention of these utilities is to cover the 95%+ use case. Setting expiration is very common, but setting priority is not so common.
+Some of the reasons for not supporting certain features should be obvious. The intention of these utilities is to cover the 95%+ use case.  
+Setting expiration is very common, but setting priority is not so common.
 
 * At this time, 'priority' is not supported as each cache has a slightly different implementation.
 * Eviction call backs, cache item or file system watchers.
 
+---
 
 ## Interfaces, Classes, &amp; Structs
 
@@ -83,8 +95,8 @@ Every adapter derives from this base class and implements the `ICachePolicyProvi
 
 ### `CacheItem<TKey, TValue>`
 
-The intention of this and the following classes is to simplify access to a resource.  Much like a `Lazy<T>`, or any other container class, you can affix, or pass around these classes without the consumer having to know what the key is.
-
+The intention of this and the following classes is to simplify access to a cached resource.  
+Much like a `Lazy<T>`, or any other container class, you can affix, or pass around these classes without the consumer having to know what the key is.
 
 ```cs
 public MyClass {
@@ -101,7 +113,7 @@ public MyClass {
 
     readonly CacheItem<string, string> _value;
     public string Value {
-        get => _value.Value;
+        get => _value; // Implicit
         set => _value.Value = value;
     }
 }
@@ -109,9 +121,9 @@ public MyClass {
 
 ### `LazyCacheItem<TKey, TValue>`
 
-The important idea here is to allow for the insertion of a `Lazy<T>` and any subsequent requests to that resource either wait for it to complete, or receive the already resolved value.
+The important idea here is to allow for the insertion of a `Lazy<T>` so that any subsequent requests to that resource either wait for it to complete, or receive the already resolved value.
 
-The underlying `.GetOrCreateLazy<T>` extension properly evicts the `Lazy<T>` if `.Value` throws an exception.
+The underlying `.GetOrCreateLazy<T>` extension properly evicts the `Lazy<T>` if the `Value` property throws an exception.
 
 ```cs
 public MyClass {
@@ -128,6 +140,32 @@ public MyClass {
                 });
     }
 
-    public string Value => _value.Value;
+    public string Value => _value; // Implicit
+}
+```
+
+
+### `AsyncLazyCacheItem<TKey, TValue>`
+
+This class implements `IAsyncCacheItem<TValue>` and therefore is awaitiable.
+
+Similar to the above, the underlying `.GetOrCreateLazyAsync` method uses a `Lazy<Task<T>>>` to initialize the method and asynchronously produce a result.  Any exceptions thrown by the the `Task<T>` or its factory method will evict the entry from the cache.
+
+```cs
+public MyClass {
+
+    // Injected ICacheAdapter<string>.
+    public MyClass(ICacheAdapter<string> cache)
+    {
+        // The key is defined in only one place.
+        _value = cache
+            .CreateAsyncLazyItem(
+                key: "a cache key",
+                async ()=>{
+                /* long running async process. */
+                });
+    }
+
+    public Task<string> Value => _value; // Implicit
 }
 ```
