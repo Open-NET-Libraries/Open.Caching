@@ -1,42 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
 		<Authors>electricessence</Authors>
-		<Description>An async-friendly set of expressive extensions that standardizes and simplfies working with ObjectCaches.
-
-Part of the "Open" set of libraries.</Description>
-    <PackageTags>cache;caching;objectcache;object-cache;expressive</PackageTags>
+		<Description>An adapter for ObjectCache that allows for simplified access to cache items.</Description>
+		<PackageTags>caching; ObjectCache; adapter; extension; extensions;</PackageTags>
 		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
-    <RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Caching/</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Caching/</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/Open.Caching.Runtime/</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>2.1.0</Version>
+		<Version>3.0.0-alpha</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-	</ItemGroup>
 	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Open.Caching" Version="3.0.0-alpha9" />
+		<PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Include="..\logo.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
-
-	<ItemGroup>
-    <PackageReference Include="Open.Caching" Version="2.1.0" />
-    <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
-  </ItemGroup>
 
 </Project>
