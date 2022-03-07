@@ -147,7 +147,7 @@ public MyClass {
 
 ### `AsyncLazyCacheItem<TKey, TValue>`
 
-This class implements `IAsyncCacheItem<TValue>` and therefore is awaitiable.
+This class implements `IAsyncCacheItem<TValue>` and therefore is awaitable.
 
 Similar to the above, the underlying `.GetOrCreateLazyAsync` method uses a `Lazy<Task<T>>>` to initialize the method and asynchronously produce a result.  Any exceptions thrown by the the `Task<T>` or its factory method will evict the entry from the cache.
 
