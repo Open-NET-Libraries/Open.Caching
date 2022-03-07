@@ -276,7 +276,7 @@ public static class CacheAdapterExtensions
 	/// Creates a pre-keyed item that the value can be retrieved from or update to the cache.
 	/// </summary>
 	public static CacheItem<TKey, TValue> CreateItem<TKey, TValue>(
-		ICacheAdapter<TKey> cache,
+		this ICacheAdapter<TKey> cache,
 		TKey key,
 		TValue defaultValue = default!)
 		=> new(cache, key, defaultValue);
@@ -285,28 +285,28 @@ public static class CacheAdapterExtensions
 	/// Creates a pre-keyed item that the value can be retrieved from will be updated by the value factory.
 	/// </summary>
 	public static LazyCacheItem<TKey, TValue> CreateLazyItem<TKey, TValue>(
-		ICacheAdapter<TKey> cache,
+		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TValue> factory)
 		=> new(cache, key, factory);
 
 	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})">
 	public static LazyCacheItem<TKey, TValue> CreateLazyItem<TKey, TValue>(
-		ICacheAdapter<TKey> cache,
+		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, TValue> factory)
 		=> new(cache, key, factory);
 
 	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})">
 	public static AsyncLazyCacheItem<TKey, TValue> CreateAsyncLazyItem<TKey, TValue>(
-		ICacheAdapter<TKey> cache,
+		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<Task<TValue>> factory)
 		=> new(cache, key, factory);
 
 	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})">
 	public static AsyncLazyCacheItem<TKey, TValue> CreateAsyncLazyItem<TKey, TValue>(
-		ICacheAdapter<TKey> cache,
+		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, Task<TValue>> factory)
 		=> new(cache, key, factory);
