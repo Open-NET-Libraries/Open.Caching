@@ -27,10 +27,10 @@ public class MemoryCacheAdapter<TKey>
 					item = v;
 					return true;
 			}
-		}
 
-		if (throwIfUnexpectedType)
-			throw new InvalidCastException($"Expected {typeof(TValue)} but actual type found was {o.GetType()}");
+			if (throwIfUnexpectedType)
+				throw new InvalidCastException($"Expected {typeof(TValue)} but actual type found was {o.GetType()}");
+		}
 
 		item = default!;
 		return false;

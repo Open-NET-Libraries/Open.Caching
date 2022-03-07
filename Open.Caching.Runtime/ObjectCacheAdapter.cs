@@ -43,7 +43,7 @@ public class ObjectCacheAdapter
 		{
 			case null:
 				item = default!;
-				return true;
+				return false;
 
 			case TValue v:
 				item = v;

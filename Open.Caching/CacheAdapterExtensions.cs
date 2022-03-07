@@ -50,10 +50,10 @@ public static class CacheAdapterExtensions
 					value = Lazy.Create(() => item);
 					return true;
 			}
-		}
 
-		if (throwIfUnexpectedType)
-			throw new InvalidCastException($"Expected a Lazy<{typeof(TValue)}> but actual type found was {o.GetType()}");
+			if (throwIfUnexpectedType)
+				throw new InvalidCastException($"Expected a Lazy<{typeof(TValue)}> but actual type found was {o.GetType()}");
+		}
 
 		value = default!;
 		return false;
