@@ -73,7 +73,7 @@ public interface ICacheAdapter<TKey>
 }
 ```
 
-It does not provide a mechanism for cache policy as that is provided by `CacheAdapterBase<TKey, TCache>` level.
+It does not offer a mechanism for a cache policy as that is provided by `CacheAdapterBase<TKey, TCache>`.
 
 ### `ExpirationPolicy`
 
@@ -99,7 +99,7 @@ The intention of this and the following classes is to simplify access to a cache
 Much like a `Lazy<T>`, or any other container class, you can affix, or pass around these classes without the consumer having to know what the key is.
 
 ```cs
-public MyClass {
+public class MyClass {
 
     // Injected ICacheAdapter<string>.
     public MyClass(ICacheAdapter<string> cache)
@@ -126,7 +126,7 @@ The important idea here is to allow for the insertion of a `Lazy<T>` so that any
 The underlying `.GetOrCreateLazy<T>` extension properly evicts the `Lazy<T>` if the `Value` property throws an exception.
 
 ```cs
-public MyClass {
+public class MyClass {
 
     // Injected ICacheAdapter<string>.
     public MyClass(ICacheAdapter<string> cache)
@@ -152,7 +152,7 @@ This class implements `IAsyncCacheItem<TValue>` and therefore is awaitable.
 Similar to the above, the underlying `.GetOrCreateLazyAsync` method uses a `Lazy<Task<T>>>` to initialize the method and asynchronously produce a result.  Any exceptions thrown by the the `Task<T>` or its factory method will evict the entry from the cache.
 
 ```cs
-public MyClass {
+public class MyClass {
 
     // Injected ICacheAdapter<string>.
     public MyClass(ICacheAdapter<string> cache)
