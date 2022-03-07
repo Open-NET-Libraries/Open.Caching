@@ -2,7 +2,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Xunit;
 
 namespace Open.Caching.Tests;
-public class CacheApiTests
+public class MemoryCacheAssumptionTests
 {
 	readonly IMemoryCache Cache
 		= new MemoryCache(new MemoryCacheOptions());
@@ -37,9 +37,7 @@ public class CacheApiTests
 		try
 		{
 			using var entry = Cache
-				.CreateEntry(key)
-				.SetValue("hello");
-			Assert.Equal("hello", entry.Value);
+				.CreateEntry(key);
 			throw new System.Exception();
 		}
 		catch

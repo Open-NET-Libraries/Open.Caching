@@ -2,6 +2,16 @@
 
 namespace Open.Caching;
 
+public interface ICacheItem<TValue>
+{
+	TValue Value { get; }
+}
+
+public interface IAsyncCacheItem<TValue>
+{
+	Task<TValue> Value { get; }
+}
+
 public abstract class CacheItemBase<TKey, TValue>
 {
 	public TKey Key { get; }
@@ -19,7 +29,8 @@ public abstract class CacheItemBase<TKey, TValue>
 	public void Clear() => Cache.Remove(Key);
 }
 
-public class CacheItem<TKey, TValue> : CacheItemBase<TKey, TValue>
+public class CacheItem<TKey, TValue>
+	: CacheItemBase<TKey, TValue>, ICacheItem<TValue>
 {
 	readonly TValue _defaultValue;
 
@@ -38,7 +49,8 @@ public class CacheItem<TKey, TValue> : CacheItemBase<TKey, TValue>
 	public static implicit operator TValue(CacheItem<TKey, TValue> item) => item.Value;
 }
 
-public class LazyCacheItem<TKey, TValue> : CacheItemBase<TKey, TValue>
+public class LazyCacheItem<TKey, TValue>
+	: CacheItemBase<TKey, TValue>, ICacheItem<TValue>
 {
 	readonly Func<TValue> _factory;
 
@@ -66,7 +78,8 @@ public class LazyCacheItem<TKey, TValue> : CacheItemBase<TKey, TValue>
 	public static implicit operator TValue(LazyCacheItem<TKey, TValue> item) => item.Value;
 }
 
-public class AsyncLazyCacheItem<TKey, TValue> : CacheItemBase<TKey, TValue>
+public class AsyncLazyCacheItem<TKey, TValue>
+	: CacheItemBase<TKey, TValue>, ICacheItem<Task<TValue>>, IAsyncCacheItem<TValue>
 {
 	readonly Func<Task<TValue>> _factory;
 
@@ -94,9 +107,9 @@ public class AsyncLazyCacheItem<TKey, TValue> : CacheItemBase<TKey, TValue>
 	public static implicit operator Task<TValue>(AsyncLazyCacheItem<TKey, TValue> item) => item.Value;
 }
 
-public static class AsyncLazyCacheItemExtensions
+public static class AsyncCacheItemExtensions
 {
-	public static TaskAwaiter<TValue> GetAwaiter<TKey, TValue>(
-		this AsyncLazyCacheItem<TKey, TValue> item)
+	public static TaskAwaiter<TValue> GetAwaiter<TValue>(
+		this IAsyncCacheItem<TValue> item)
 		=> item.Value.GetAwaiter();
 }

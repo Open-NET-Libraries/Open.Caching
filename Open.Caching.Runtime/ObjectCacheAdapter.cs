@@ -1,30 +1,42 @@
 ﻿using System.Runtime.Caching;
 
-namespace Open.Caching.Memory;
+namespace Open.Caching;
 
 /// <summary>
-/// <see cref="ObjectCache"/> adapter with <see cref="CacheItemFactory{string}"/> functionality for simplifying cache item access.
-/// Use <see cref="ObjectCacheAdapter.ExpirationPolicyProvider"/> to generate adapters with expiration behaviors.
+/// <see cref="ObjectCache"/> adapter with functionality for simplifying cache item access.
 /// </summary>s
-public class ObjectCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<string>
+public class ObjectCacheAdapter
+	: CacheAdapterBase<string, ObjectCache>
 {
-	public ObjectCache Cache { get; }
+	public ObjectCacheAdapter(ObjectCache cache) : base(cache) { }
 
-	protected override ICacheAdapter<string> CacheAdapter { get; }
-
-	public ObjectCacheAdapter(ObjectCache cache)
-	{
-		Cache = cache ?? throw new ArgumentNullException(nameof(cache));
-		CacheAdapter = this;
-	}
-
-	public void Remove(string key)
+	/// <inheritdoc />
+	public override void Remove(string key)
 		=> Cache.Remove(key);
 
-	public virtual void Set<TValue>(string key, TValue item)
+	/// <inheritdoc />
+	public override void Set<TValue>(string key, TValue item)
 		=> Cache[key] = item;
 
-	public bool TryGetValue<TValue>(string key, out TValue item, bool throwIfUnexpectedType = false)
+	/// <inheritdoc />
+	public override void Set<TValue>(string key, TValue item, ExpirationPolicy expiration)
+	{
+		if (expiration.Sliding == TimeSpan.Zero && expiration.Absolute != TimeSpan.Zero)
+		{
+			Cache.Set(key, item, expiration.AbsoluteRelativeToNow);
+			return;
+		}
+
+		var policy = new CacheItemPolicy();
+		if (expiration.Absolute != TimeSpan.Zero)
+			policy.AbsoluteExpiration = expiration.AbsoluteRelativeToNow;
+		if (expiration.Sliding != TimeSpan.Zero)
+			policy.SlidingExpiration = expiration.Sliding;
+		Cache.Set(key, item, policy);
+	}
+
+	/// <inheritdoc />
+	public override bool TryGetValue<TValue>(string key, out TValue item, bool throwIfUnexpectedType = false)
 	{
 		var o = Cache[key];
 		switch (o)
@@ -43,43 +55,5 @@ public class ObjectCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<st
 
 		item = default!;
 		return false;
-	}
-
-	class CacheExpirationPolicy : ObjectCacheAdapter
-	{
-		public ExpirationPolicy Expiration;
-
-		public CacheExpirationPolicy(
-			ObjectCache cache,
-			ExpirationPolicy policy)
-			: base(cache)
-		{
-			Expiration = policy;
-		}
-
-		public override void Set<TValue>(string key, TValue item)
-		{
-			if (Expiration.Sliding == TimeSpan.Zero && Expiration.Absolute != TimeSpan.Zero)
-			{
-				Cache.Set(key, item, Expiration.AbsoluteRelativeToNow);
-				return;
-			}
-
-			var policy = new CacheItemPolicy();
-			if (Expiration.Absolute != TimeSpan.Zero)
-				policy.AbsoluteExpiration = Expiration.AbsoluteRelativeToNow;
-			if (Expiration.Sliding != TimeSpan.Zero)
-				policy.SlidingExpiration = Expiration.Sliding;
-			Cache.Set(key, item, policy);
-		}
-	}
-
-	public class ExpirationPolicyProvider
-		: ObjectCacheAdapter, ICachePolicyProvider<string, ExpirationPolicy>
-	{
-		public ExpirationPolicyProvider(ObjectCache cache) : base(cache) { }
-
-		public ICacheAdapter<string> Policy(ExpirationPolicy policy)
-			=> policy == default ? this : new CacheExpirationPolicy(Cache, policy);
 	}
 }

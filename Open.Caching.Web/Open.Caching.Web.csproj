@@ -36,7 +36,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Open.Caching" Version="3.0.0-alpha2" />
+		<PackageReference Include="Open.Caching" Version="3.0.0-alpha6" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,30 +1,19 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
-namespace Open.Caching.Memory;
+namespace Open.Caching;
 
 /// <summary>
-/// <see cref="IMemoryCache"/> adapter with <see cref="CacheItemFactory{TKey}"/> functionality for simplifying cache item access.
-/// Use <see cref="MemoryCacheAdapter{TKey}.ExpirationPolicyProvider"/> to generate adapters with expiration behaviors.
+/// <see cref="IMemoryCache"/> adapter with functionality for simplifying cache item access.
 /// </summary>
-public class MemoryCacheAdapter<TKey> : CacheItemFactoryBase<TKey>, ICacheAdapter<TKey>
+public class MemoryCacheAdapter<TKey>
+	: CacheAdapterBase<TKey, IMemoryCache>
 {
-	public IMemoryCache Cache { get; }
+	public MemoryCacheAdapter(IMemoryCache cache) : base(cache)	{ }
 
-	protected override ICacheAdapter<TKey> CacheAdapter { get; }
-
-	public MemoryCacheAdapter(IMemoryCache cache)
-	{
-		Cache = cache ?? throw new ArgumentNullException(nameof(cache));
-		CacheAdapter = this;
-	}
-
-	public void Remove(TKey key)
+	public override void Remove(TKey key)
 		=> Cache.Remove(key);
 
-	public virtual void Set<TValue>(TKey key, TValue item)
-		=> Cache.Set(key, item);
-
-	public bool TryGetValue<TValue>(TKey key, out TValue item, bool throwIfUnexpectedType = false)
+	public override bool TryGetValue<TValue>(TKey key, out TValue item, bool throwIfUnexpectedType = false)
 	{
 		if (Cache.TryGetValue(key, out object o))
 		{
@@ -46,35 +35,22 @@ public class MemoryCacheAdapter<TKey> : CacheItemFactoryBase<TKey>, ICacheAdapte
 		item = default!;
 		return false;
 	}
-	class CacheExpirationPolicy : MemoryCacheAdapter<TKey>
+
+	public override void Set<TValue>(TKey key, TValue item)
+		=> Cache.Set(key, item);
+
+	public override void Set<TValue>(TKey key, TValue item, ExpirationPolicy expiration)
 	{
-		public ExpirationPolicy Expiration;
-
-		public CacheExpirationPolicy(
-			IMemoryCache cache,
-			ExpirationPolicy policy)
-			: base(cache)
-		{
-			Expiration = policy;
-		}
-
-		public override void Set<TValue>(TKey key, TValue item)
-		{
-			using var cacheItem = Cache.CreateEntry(key);
-			if (Expiration.Absolute != TimeSpan.Zero)
-				cacheItem.AbsoluteExpirationRelativeToNow = Expiration.Absolute;
-			if (Expiration.Sliding != TimeSpan.Zero)
-				cacheItem.SlidingExpiration = Expiration.Sliding;
-			cacheItem.Value = item;
-		}
+		using var cacheItem = Cache.CreateEntry(key);
+		if (expiration.Absolute != TimeSpan.Zero)
+			cacheItem.AbsoluteExpirationRelativeToNow = expiration.Absolute;
+		if (expiration.Sliding != TimeSpan.Zero)
+			cacheItem.SlidingExpiration = expiration.Sliding;
+		cacheItem.Value = item;
 	}
+}
 
-	public class ExpirationPolicyProvider
-		: MemoryCacheAdapter<TKey>, ICachePolicyProvider<TKey, ExpirationPolicy>
-	{
-		public ExpirationPolicyProvider(IMemoryCache cache) : base(cache) { }
-
-		public ICacheAdapter<TKey> Policy(ExpirationPolicy policy)
-			=> policy == default ? this : new CacheExpirationPolicy(Cache, policy);
-	}
+public class MemoryCacheAdapter : MemoryCacheAdapter<object>
+{
+	public MemoryCacheAdapter(IMemoryCache cache) : base(cache) { }
 }

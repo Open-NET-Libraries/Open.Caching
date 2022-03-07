@@ -1,30 +1,31 @@
 ﻿using System.Web.Caching;
 
-namespace Open.Caching.Web;
+namespace Open.Caching;
 
 /// <summary>
-/// <see cref="System.Web.Caching.Cache"/> adapter with <see cref="CacheItemFactory{string}"/> functionality for simplifying cache item access.
-/// Use <see cref="WebCacheAdapter.ExpirationPolicyProvider"/> to generate adapters with expiration behaviors.
+/// <see cref="System.Web.Caching"/>.<see cref="Cache"/> adapter with functionality for simplifying cache item access.
 /// </summary>s
-public class WebCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<string>
+public class WebCacheAdapter
+	: CacheAdapterBase<string, Cache>
 {
-	public Cache Cache { get; }
+	public WebCacheAdapter(Cache cache) : base(cache) { }
 
-	protected override ICacheAdapter<string> CacheAdapter { get; }
-
-	public WebCacheAdapter(Cache cache)
-	{
-		Cache = cache ?? throw new ArgumentNullException(nameof(cache));
-		CacheAdapter = this;
-	}
-
-	public void Remove(string key)
+	/// <inheritdoc />
+	public override void Remove(string key)
 		=> Cache.Remove(key);
 
-	public virtual void Set<TValue>(string key, TValue item)
+	/// <inheritdoc />
+	public override void Set<TValue>(string key, TValue item)
 		=> Cache[key] = item;
 
-	public bool TryGetValue<TValue>(string key, out TValue item, bool throwIfUnexpectedType = false)
+	/// <inheritdoc />
+	public override void Set<TValue>(string key, TValue item, ExpirationPolicy expiration)
+		=> Cache.Insert(key, item, null,
+			expiration.Absolute == TimeSpan.Zero ? Cache.NoAbsoluteExpiration : expiration.AbsoluteRelativeToNow.DateTime,
+			expiration.Sliding);
+
+	/// <inheritdoc />
+	public override bool TryGetValue<TValue>(string key, out TValue item, bool throwIfUnexpectedType = false)
 	{
 		var o = Cache[key];
 		switch (o)
@@ -43,32 +44,5 @@ public class WebCacheAdapter : CacheItemFactoryBase<string>, ICacheAdapter<strin
 
 		item = default!;
 		return false;
-	}
-
-	class CacheExpirationPolicy : WebCacheAdapter
-	{
-		public ExpirationPolicy Expiration;
-
-		public CacheExpirationPolicy(
-			Cache cache,
-			ExpirationPolicy policy)
-			: base(cache)
-		{
-			Expiration = policy;
-		}
-
-		public override void Set<TValue>(string key, TValue item)
-			=> Cache.Insert(key, item, null,
-				Expiration.Absolute == TimeSpan.Zero ? Cache.NoAbsoluteExpiration : Expiration.AbsoluteRelativeToNow.DateTime,
-				Expiration.Sliding);
-	}
-
-	public class ExpirationPolicyProvider
-		: WebCacheAdapter, ICachePolicyProvider<string, ExpirationPolicy>
-	{
-		public ExpirationPolicyProvider(Cache cache) : base(cache) { }
-
-		public ICacheAdapter<string> Policy(ExpirationPolicy policy)
-			=> policy == default ? this : new CacheExpirationPolicy(Cache, policy);
 	}
 }
