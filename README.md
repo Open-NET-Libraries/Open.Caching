@@ -73,7 +73,7 @@ public interface ICacheAdapter<TKey>
 }
 ```
 
-It does not provide a mechanism for cache policy as that is provided by `CacheAdapterBase<TKey, TCache>` level.
+It does not offer a mechanism for a cache policy as that is provided by `CacheAdapterBase<TKey, TCache>`.
 
 ### `ExpirationPolicy`
 
