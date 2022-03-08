@@ -26,7 +26,6 @@ public class WebCacheAdapter
 			expiration.HasSliding ? expiration.AbsoluteRelativeToNow.DateTime : Cache.NoAbsoluteExpiration,
 			expiration.Sliding);
 
-
 	/// <inheritdoc />
 	public override bool TryGetValue<TValue>(string key, out TValue item, bool throwIfUnexpectedType = false)
 	{
