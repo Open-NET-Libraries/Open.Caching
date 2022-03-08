@@ -3,6 +3,12 @@
 public abstract class CacheAdapterBase<TKey, TCache>
 	: ICacheAdapterAndPolicyProvider<TKey, ExpirationPolicy>
 {
+	protected static bool IsNullableType<T>()
+		=> CacheAdapterExtensions.IsNullableType<T>();
+
+	protected static InvalidCastException UnexpectedTypeException<T>(object? o)
+		=> CacheAdapterExtensions.UnexpectedTypeException<T>(o);
+
 	public TCache Cache { get; }
 
 	protected CacheAdapterBase(TCache cache)

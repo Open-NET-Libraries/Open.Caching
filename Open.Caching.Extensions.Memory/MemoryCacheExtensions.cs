@@ -12,6 +12,11 @@ public static class MemoryCacheExtensions
 		return type.IsClass || Nullable.GetUnderlyingType(type) != null;
 	}
 
+	private static InvalidCastException UnexpectedTypeException<T>(object? o)
+		=> new(o is null
+		? $"Expected type {typeof(T)} but actual value was null."
+		: $"Expected type {typeof(T)} but actual type found was {o.GetType()}.");
+
 	/// <remarks>
 	/// If <paramref name="throwIfUnexpectedType"/> is true
 	/// and the value found does not match either <typeparamref name="TValue"/>
@@ -43,7 +48,7 @@ public static class MemoryCacheExtensions
 			}
 
 			if (throwIfUnexpectedType)
-				throw new InvalidCastException($"Expected a {typeof(TValue)} but actual type found was {o.GetType()}");
+				throw UnexpectedTypeException<TValue>(o);
 		}
 
 		value = default!;
@@ -98,7 +103,7 @@ public static class MemoryCacheExtensions
 			}
 
 			if (throwIfUnexpectedType)
-				throw new InvalidCastException($"Expected a Lazy<{typeof(TValue)}> but actual type found was {o.GetType()}");
+				throw UnexpectedTypeException<Lazy<TValue>>(o);
 		}
 
 		value = default!;
@@ -109,29 +114,29 @@ public static class MemoryCacheExtensions
 		this IMemoryCache cache,
 		object key, Func<object, Lazy<TValue>> valueFactory)
 	{
-		if (cache.TryGetValue(key, out object o))
+		if (!cache.TryGetValue(key, out object o))
 		{
-			return o switch
+			var lazy = valueFactory(key);
+			if (lazy is null) throw new InvalidOperationException(CannotProcessNullLazy);
+
+			try
 			{
-				null when IsNullableType<TValue>() => default!,
-				Lazy<TValue> lz => lz.Value,
-				TValue item => item,
-				_ => throw new InvalidCastException($"Expected a Lazy<{typeof(TValue)}> but actual type found was {o.GetType()}")
-			};
+				return lazy.Value;
+			}
+			catch
+			{
+				cache.Remove(key); // Fail safe.
+				throw;
+			}
 		}
 
-		var lazy = valueFactory(key);
-		if (lazy is null) throw new InvalidOperationException(CannotProcessNullLazy);
-
-		try
+		return o switch
 		{
-			return lazy.Value;
-		}
-		catch
-		{
-			cache.Remove(key); // Fail safe.
-			throw;
-		}
+			null when IsNullableType<TValue>() => default!,
+			Lazy<TValue> lz => lz.Value,
+			TValue item => item,
+			_ => throw UnexpectedTypeException<Lazy<TValue>>(o)
+		};
 	}
 
 	/// <exception cref="InvalidOperationException">
@@ -271,37 +276,37 @@ public static class MemoryCacheExtensions
 		this IMemoryCache cache,
 		object key, Func<object, Lazy<Task<TValue>>> valueFactory)
 	{
-		if (cache.TryGetValue(key, out object o))
+		if (!cache.TryGetValue(key, out object o))
 		{
-			return o switch
-			{
-				null when IsNullableType<TValue>() => Task.FromResult(default(TValue)!),
-				Lazy<Task<TValue>> lz => lz.Value,
-				Task<TValue> task => task,
-				Lazy<TValue> lz => Task.FromResult(lz.Value),
-				TValue item => Task.FromResult(item),
-				_ => throw new InvalidCastException($"Expected a Lazy<{typeof(TValue)}> but actual type found was {o.GetType()}")
-			};
-		}
+			var lazy = valueFactory(key);
+			if (lazy is null) throw new InvalidOperationException(CannotProcessNullLazy);
 
-		var lazy = valueFactory(key);
-		if (lazy is null) throw new InvalidOperationException(CannotProcessNullLazy);
-
-		try
-		{
-			var task = lazy.Value;
-			return task.ContinueWith(t =>
+			try
 			{
-				if (t.IsFaulted || t.IsCanceled)
-					cache.Remove(key); // Fail safe.
+				var task = lazy.Value;
+				return task.ContinueWith(t =>
+				{
+					if (t.IsFaulted || t.IsCanceled)
+						cache.Remove(key); // Fail safe.
 				return t;
-			}).Unwrap();
+				}).Unwrap();
+			}
+			catch
+			{
+				cache.Remove(key); // Fail safe.
+				throw;
+			}
 		}
-		catch
+
+		return o switch
 		{
-			cache.Remove(key); // Fail safe.
-			throw;
-		}
+			null when IsNullableType<TValue>() => Task.FromResult(default(TValue)!),
+			Lazy<Task<TValue>> lz => lz.Value,
+			Task<TValue> task => task,
+			Lazy<TValue> lz => Task.FromResult(lz.Value),
+			TValue item => Task.FromResult(item),
+			_ => throw UnexpectedTypeException<Lazy<Task<TValue>>>(o)
+		};
 	}
 
 	/// <exception cref="InvalidOperationException">
