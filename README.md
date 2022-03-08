@@ -1,5 +1,8 @@
 # Open.Caching
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://www.nuget.org/packages/Open.Caching/blob/master/LICENSE)
+![100% code coverage](https://img.shields.io/badge/coverage-100%25-green)
+
 Useful set of DI/IoC agnostic interfaces, utilities and extensions for simplifying cache usage.
 
 ## Implementation
@@ -40,6 +43,8 @@ Useful when attempting to transition code away from legacy ASP.NET.
 The above adapters all accept strings as keys, but only `MemoryCacheAdapter` will accept any type of key as `IMemoryCache` uses `object`s as keys.  If your dependency injection configuration uses `ICacheAdapter<string>` as its cache interface then any of the implementations can be used.  So if you are transitioning from a legacy ASP.NET environment, switching to `MemoryCacheAdapter<string>` will make things easy.
 
 Every cache implementation listed handles absolute and sliding expiration.
+
+Because `IMemoryCache` allows for `null` values to be inserted, the other implementations use a placeholder `NullValue` to indicate null and retain parity for all implementations.
 
 ## Not Yet Supported
 

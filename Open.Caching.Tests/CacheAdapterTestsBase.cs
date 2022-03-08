@@ -5,15 +5,14 @@ namespace Open.Caching.Tests;
 
 public abstract class CacheAdapterTestsBase
 {
-	private readonly ICacheAdapterAndPolicyProvider<string, ExpirationPolicy> Cache;
+	protected const string Key = "hello";
+	protected readonly ICacheAdapterAndPolicyProvider<string, ExpirationPolicy> Cache;
 
 	protected CacheAdapterTestsBase(
 		ICacheAdapterAndPolicyProvider<string, ExpirationPolicy> cache)
 	{
 		Cache = cache ?? throw new ArgumentNullException(nameof(cache));
 	}
-
-	const string Key = "hello";
 
 	[Fact]
 	public async Task AwaitTest()
@@ -28,6 +27,29 @@ public abstract class CacheAdapterTestsBase
 
 		(await item).Should().Be(1);
 		(await item.Value).Should().Be(1);
+	}
+
+	[Fact]
+	public void ExpectedTypeTests()
+	{
+		Cache.Remove(Key);
+		Cache.TryGetValue(Key, out int _).Should().BeFalse();
+		Cache.TryGetLazy(Key, out Lazy<int> _).Should().BeFalse();
+		Cache.Set(Key, "nope");
+		Cache.TryGetValue(Key, out int _).Should().BeFalse();
+		Cache.TryGetLazy(Key, out Lazy<int> _).Should().BeFalse();
+		Assert.Throws<InvalidCastException>(() => Cache.TryGetValue(Key, out int _, true));
+		Assert.Throws<InvalidCastException>(() => Cache.TryGetLazy(Key, out Lazy<int> _, true));
+
+		Cache.Set<object?>(Key, null);
+		Cache.TryGetValue(Key, out string _).Should().BeTrue();
+		Cache.TryGetLazy(Key, out Lazy<string> _).Should().BeTrue();
+		Cache.TryGetValue(Key, out int? _).Should().BeTrue();
+		Cache.TryGetLazy(Key, out Lazy<int?> _).Should().BeTrue();
+		Cache.TryGetValue(Key, out int _).Should().BeFalse();
+		Cache.TryGetLazy(Key, out Lazy<int> _).Should().BeFalse();
+		Assert.Throws<InvalidCastException>(() => Cache.TryGetValue(Key, out int _, true));
+		Assert.Throws<InvalidCastException>(() => Cache.TryGetLazy(Key, out Lazy<int> _, true));
 	}
 
 	[Fact]

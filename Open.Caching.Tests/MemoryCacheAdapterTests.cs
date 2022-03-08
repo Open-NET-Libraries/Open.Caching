@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using FluentAssertions;
+using Microsoft.Extensions.Caching.Memory;
+using Xunit;
 
 namespace Open.Caching.Tests;
 

@@ -20,7 +20,7 @@ public class MemoryCacheAdapter<TKey>
 		{
 			switch (o)
 			{
-				case null:
+				case null when IsNullableType<TValue>():
 					item = default!;
 					return true;
 
@@ -30,7 +30,7 @@ public class MemoryCacheAdapter<TKey>
 			}
 
 			if (throwIfUnexpectedType)
-				throw new InvalidCastException($"Expected {typeof(TValue)} but actual type found was {o.GetType()}");
+				throw UnexpectedTypeException<TValue>(o);
 		}
 
 		item = default!;

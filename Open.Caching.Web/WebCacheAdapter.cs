@@ -14,34 +14,42 @@ public class WebCacheAdapter
 	public override void Remove(string key)
 		=> Cache.Remove(key);
 
+	public static readonly object NullValue = new();
+
 	/// <inheritdoc />
 	public override void Set<TValue>(string key, TValue item)
-		=> Cache[key] = item;
+		=> Cache[key] = item ?? NullValue;
 
 	/// <inheritdoc />
 	public override void Set<TValue>(string key, TValue item, ExpirationPolicy expiration)
-		=> Cache.Insert(key, item, null,
+		=> Cache.Insert(key, item ?? NullValue, null,
 			expiration.HasSliding ? expiration.AbsoluteRelativeToNow.DateTime : Cache.NoAbsoluteExpiration,
 			expiration.Sliding);
+
 
 	/// <inheritdoc />
 	public override bool TryGetValue<TValue>(string key, out TValue item, bool throwIfUnexpectedType = false)
 	{
-		var o = Cache[key];
-		switch (o)
+		var o = Cache.Get(key);
+		if (o is null) goto notFound;
+		if (o == NullValue)
 		{
-			case null:
+			if (IsNullableType<TValue>())
+			{
 				item = default!;
-				return false;
-
-			case TValue v:
-				item = v;
 				return true;
+			}
+		}
+		else if (o is TValue v)
+		{
+			item = v;
+			return true;
 		}
 
 		if (throwIfUnexpectedType)
-			throw new InvalidCastException($"Expected {typeof(TValue)} but actual type found was {o.GetType()}");
+			throw UnexpectedTypeException<TValue>(o);
 
+		notFound:
 		item = default!;
 		return false;
 	}
