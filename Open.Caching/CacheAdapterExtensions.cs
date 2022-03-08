@@ -5,6 +5,12 @@ namespace Open.Caching;
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary.")]
 public static class CacheAdapterExtensions
 {
+	private static bool IsNullableType<T>()
+	{
+		var type = typeof(T);
+		return type.IsClass || Nullable.GetUnderlyingType(type) != null;
+	}
+
 	/// <summary>
 	/// Gets the value from the cache otherwise returns the default of <typeparamref name="TValue"/>.
 	/// </summary>
@@ -38,7 +44,7 @@ public static class CacheAdapterExtensions
 		{
 			switch (o)
 			{
-				case null:
+				case null when IsNullableType<TValue>():
 					value = Lazy.Default<TValue>();
 					return true;
 
@@ -67,7 +73,7 @@ public static class CacheAdapterExtensions
 		{
 			return o switch
 			{
-				null => default!,
+				null when IsNullableType<TValue>() => default!,
 				Lazy<TValue> lz => lz.Value,
 				TValue item => item,
 				_ => throw new InvalidCastException($"Expected a Lazy<{typeof(TValue)}> but actual type found was {o.GetType()}")
@@ -178,7 +184,7 @@ public static class CacheAdapterExtensions
 		{
 			return o switch
 			{
-				null => Task.FromResult(default(TValue)!),
+				null when IsNullableType<TValue>() => Task.FromResult(default(TValue)!),
 				Lazy<Task<TValue>> lz => lz.Value,
 				Task<TValue> task => task,
 				Lazy<TValue> lz => Task.FromResult(lz.Value),

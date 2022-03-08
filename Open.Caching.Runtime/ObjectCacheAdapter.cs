@@ -10,6 +10,12 @@ public class ObjectCacheAdapter
 {
 	public ObjectCacheAdapter(ObjectCache cache) : base(cache) { }
 
+	public ObjectCacheAdapter() : this(MemoryCache.Default) { }
+
+	private static ObjectCacheAdapter? _default;
+	public static ObjectCacheAdapter Default
+		=> LazyInitializer.EnsureInitialized(ref _default)!;
+
 	/// <inheritdoc />
 	public override void Remove(string key)
 		=> Cache.Remove(key);
@@ -27,18 +33,21 @@ public class ObjectCacheAdapter
 			return;
 		}
 
-		var policy = new CacheItemPolicy();
-		if (expiration.HasAbsolute)
-			policy.AbsoluteExpiration = expiration.AbsoluteRelativeToNow;
-		if (expiration.HasSliding)
-			policy.SlidingExpiration = expiration.Sliding;
-		Cache.Set(key, item, policy);
+		Cache.Set(key, item, new CacheItemPolicy
+		{
+			AbsoluteExpiration = expiration.HasAbsolute
+				? expiration.AbsoluteRelativeToNow
+				: ObjectCache.InfiniteAbsoluteExpiration,
+			SlidingExpiration = expiration.HasSliding
+				? expiration.Sliding
+				: ObjectCache.NoSlidingExpiration
+		});
 	}
 
 	/// <inheritdoc />
 	public override bool TryGetValue<TValue>(string key, out TValue item, bool throwIfUnexpectedType = false)
 	{
-		var o = Cache[key];
+		var o = Cache.Get(key);
 		switch (o)
 		{
 			case null:

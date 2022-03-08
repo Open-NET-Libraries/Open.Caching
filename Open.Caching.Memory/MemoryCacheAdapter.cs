@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Caching;
 
@@ -50,6 +51,7 @@ public class MemoryCacheAdapter<TKey>
 	}
 }
 
+[ExcludeFromCodeCoverage]
 public class MemoryCacheAdapter : MemoryCacheAdapter<object>
 {
 	public MemoryCacheAdapter(IMemoryCache cache) : base(cache) { }

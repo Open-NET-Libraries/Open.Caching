@@ -18,10 +18,17 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="coverlet.msbuild" Version="3.1.2">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="FluentAssertions" Version="6.5.1" />
+
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Open.Caching.Memory\Open.Caching.Memory.csproj" />
+		<ProjectReference Include="..\Open.Caching.Runtime\Open.Caching.Runtime.csproj" />
 	</ItemGroup>
 
 </Project>

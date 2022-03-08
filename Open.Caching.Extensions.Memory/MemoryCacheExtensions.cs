@@ -6,6 +6,12 @@ namespace Open.Caching.Extensions.Memory;
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary.")]
 public static class MemoryCacheExtensions
 {
+	private static bool IsNullableType<T>()
+	{
+		var type = typeof(T);
+		return type.IsClass || Nullable.GetUnderlyingType(type) != null;
+	}
+
 	/// <remarks>
 	/// If <paramref name="throwIfUnexpectedType"/> is true
 	/// and the value found does not match either <typeparamref name="TValue"/>
@@ -27,7 +33,7 @@ public static class MemoryCacheExtensions
 		{
 			switch (o)
 			{
-				case null:
+				case null when IsNullableType<TValue>():
 					value = default!;
 					return true;
 
@@ -78,7 +84,7 @@ public static class MemoryCacheExtensions
 		{
 			switch (o)
 			{
-				case null:
+				case null when IsNullableType<TValue>():
 					value = Lazy.Default<TValue>();
 					return true;
 
@@ -107,7 +113,7 @@ public static class MemoryCacheExtensions
 		{
 			return o switch
 			{
-				null => default!,
+				null when IsNullableType<TValue>() => default!,
 				Lazy<TValue> lz => lz.Value,
 				TValue item => item,
 				_ => throw new InvalidCastException($"Expected a Lazy<{typeof(TValue)}> but actual type found was {o.GetType()}")
@@ -269,7 +275,7 @@ public static class MemoryCacheExtensions
 		{
 			return o switch
 			{
-				null => Task.FromResult(default(TValue)!),
+				null when IsNullableType<TValue>() => Task.FromResult(default(TValue)!),
 				Lazy<Task<TValue>> lz => lz.Value,
 				Task<TValue> task => task,
 				Lazy<TValue> lz => Task.FromResult(lz.Value),
