@@ -1,7 +1,7 @@
 ﻿namespace Open.Caching;
 
 public abstract class CacheAdapterBase<TKey, TCache>
-	: ICacheAdapter<TKey>, ICachePolicyProvider<TKey, ExpirationPolicy>
+	: ICacheAdapterAndPolicyProvider<TKey, ExpirationPolicy>
 {
 	public TCache Cache { get; }
 

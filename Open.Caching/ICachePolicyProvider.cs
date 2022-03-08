@@ -5,9 +5,9 @@ public interface ICachePolicyProvider<TKey, TPolicy>
 	ICacheAdapter<TKey> Policy(TPolicy policy);
 }
 
-public interface ICachePriorityProvider<TKey, TPriority>
+public interface ICacheAdapterAndPolicyProvider<TKey, TPolicy>
+	: ICacheAdapter<TKey>, ICachePolicyProvider<TKey, TPolicy>
 {
-	ICacheAdapter<TKey> Policy(TPriority priority);
 }
 
 public static class CachePolicyExtensions
