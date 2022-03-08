@@ -40,15 +40,18 @@ Useful when attempting to transition code away from legacy ASP.NET.
 
 ## Notable Similarities &amp; Differences
 
-The above adapters all accept strings as keys, but only `MemoryCacheAdapter` will accept any type of key as `IMemoryCache` uses `object`s as keys.  If your dependency injection configuration uses `ICacheAdapter<string>` as its cache interface then any of the implementations can be used.  So if you are transitioning from a legacy ASP.NET environment, switching to `MemoryCacheAdapter<string>` will make things easy.
+The above adapters all accept strings as keys,
+but only `MemoryCacheAdapter` will accept any type of key as `IMemoryCache` uses `object`s as keys.  If your dependency injection configuration uses `ICacheAdapter<string>` as its cache interface then any of the implementations can be used.  So if you are transitioning from a legacy ASP.NET environment, switching to `MemoryCacheAdapter<string>` will make things easy.
 
 Every cache implementation listed handles absolute and sliding expiration.
 
-Because `IMemoryCache` allows for `null` values to be inserted, the other implementations use a placeholder `NullValue` to indicate null and retain parity for all implementations.
+Because `IMemoryCache` allows for `null` values to be inserted,
+the other implementations use a placeholder `NullValue` to indicate `null` and retain parity for all implementations.
 
 ## Not Yet Supported
 
-Some of the reasons for not supporting certain features should be obvious. The intention of these utilities is to cover the 95%+ use case.  
+Some of the reasons for not supporting certain features should be obvious.  
+The intention of these utilities is to cover the 95%+ use case.  
 Setting expiration is very common, but setting priority is not so common.
 
 * At this time, 'priority' is not supported as each cache has a slightly different implementation.
