@@ -13,7 +13,7 @@
 		<PackageTags>caching; ObjectCache; adapter; extension; extensions;</PackageTags>
 		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Caching/</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/Open.Caching.Runtime/</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/tree/master/Open.Caching.Runtime/</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
 		<Version>3.0.0</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
@@ -27,7 +27,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-		<PackageReference Include="Open.Caching" Version="3.0.0" />
+		<PackageReference Include="Open.Caching" Version="3.0.1" />
 		<PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
 	</ItemGroup>
 
