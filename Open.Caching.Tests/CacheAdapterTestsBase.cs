@@ -84,4 +84,26 @@ public abstract class CacheAdapterTestsBase
 		Thread.Sleep(4000);
 		item.Value.Should().Be(0);
 	}
+
+	[Fact]
+	public void LazyEvictionTests()
+	{
+		var item = Cache.CreateLazyItem<string, int>(Key, () => throw new Exception());
+		item.Clear();
+		Assert.Throws<Exception>(() => item.Value);
+		item.Exists.Should().BeFalse();
+	}
+
+	[Fact]
+	public async Task AsyncLazyEvictionTests()
+	{
+		var item = Cache.CreateAsyncLazyItem<string, int>(Key, async () =>
+		{
+			await Task.Yield();
+			throw new Exception();
+		});
+		item.Clear();
+		await Assert.ThrowsAsync<Exception>(() => item);
+		item.Exists.Should().BeFalse();
+	}
 }
