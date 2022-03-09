@@ -13,15 +13,16 @@
 		<PackageTags>caching; adapter; extension; extensions; GetOrCreate; GetOrCreateLazy; GetOrCreateLazyAsync</PackageTags>
 		<Copyright>© electricessence (Oren F.) All rights reserved.</Copyright>
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Caching/</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/Open.Caching.Extensions.Memory/</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/tree/master/Open.Caching.Extensions.Memory/</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -34,6 +35,13 @@
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
