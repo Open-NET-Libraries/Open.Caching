@@ -288,7 +288,7 @@ public static class MemoryCacheExtensions
 				{
 					if (t.IsFaulted || t.IsCanceled)
 						cache.Remove(key); // Fail safe.
-				return t;
+					return t;
 				}).Unwrap();
 			}
 			catch

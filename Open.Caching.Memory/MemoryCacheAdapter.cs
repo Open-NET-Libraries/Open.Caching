@@ -9,7 +9,7 @@ namespace Open.Caching;
 public class MemoryCacheAdapter<TKey>
 	: CacheAdapterBase<TKey, IMemoryCache>
 {
-	public MemoryCacheAdapter(IMemoryCache cache) : base(cache)	{ }
+	public MemoryCacheAdapter(IMemoryCache cache) : base(cache) { }
 
 	public override void Remove(TKey key)
 		=> Cache.Remove(key);

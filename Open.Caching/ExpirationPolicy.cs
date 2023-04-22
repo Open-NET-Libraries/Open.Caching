@@ -11,7 +11,7 @@ public readonly record struct ExpirationPolicy
 	public bool HasSliding => Sliding != TimeSpan.Zero;
 
 	public DateTimeOffset AbsoluteRelativeToNow
-		=> Absolute==TimeSpan.Zero
+		=> Absolute == TimeSpan.Zero
 		? DateTimeOffset.MaxValue
 		: DateTimeOffset.Now + Absolute;
 

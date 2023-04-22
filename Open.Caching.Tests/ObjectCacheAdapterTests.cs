@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Xunit;
-
-namespace Open.Caching.Tests;
+﻿namespace Open.Caching.Tests;
 
 public class ObjectCacheAdapterTests : CacheAdapterTestsBase
 {
