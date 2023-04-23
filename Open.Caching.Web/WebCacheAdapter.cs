@@ -8,12 +8,19 @@ namespace Open.Caching;
 public class WebCacheAdapter
 	: CacheAdapterBase<string, Cache>
 {
+	/// <summary>
+	/// Constructs a new instance of <see cref="WebCacheAdapter"/>.
+	/// </summary>
+	/// <param name="cache"></param>
 	public WebCacheAdapter(Cache cache) : base(cache) { }
 
 	/// <inheritdoc />
 	public override void Remove(string key)
 		=> Cache.Remove(key);
 
+	/// <summary>
+	/// The null value instance.
+	/// </summary>
 	public static readonly object NullValue = new();
 
 	/// <inheritdoc />
@@ -31,7 +38,7 @@ public class WebCacheAdapter
 	{
 		var o = Cache.Get(key);
 		if (o is null) goto notFound;
-		if (o == NullValue)
+		if (ReferenceEquals(o, NullValue))
 		{
 			if (IsNullableType<TValue>())
 			{

@@ -1,8 +1,13 @@
 ﻿using System.Diagnostics.Contracts;
+using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Open.Caching;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary.")]
+/// <summary>
+/// Extensions for <see cref="ICacheAdapter{TKey}"/>.
+/// </summary>
+[SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary.")]
 public static class CacheAdapterExtensions
 {
 	internal static bool IsNullableType<T>()
@@ -24,6 +29,7 @@ public static class CacheAdapterExtensions
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		TValue defaultValue = default!)
+		where TKey : notnull
 		=> cache.TryGetValue(key, out TValue value, true) ? value : defaultValue;
 
 	private const string CannotProcessNullFactory = "Cannot process a null factory.";
@@ -38,12 +44,13 @@ public static class CacheAdapterExtensions
 	/// If <paramref name="throwIfUnexpectedType"/> is true
 	/// and the value does not resolve to the expected type.
 	/// </exception>
-	/// <inheritdoc cref="IMemoryCache.TryGetValue(object, out object)"/>
+	/// <inheritdoc cref="IMemoryCache.TryGetValue(object, out object?)"/>
 	public static bool TryGetLazy<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		out Lazy<TValue> value,
 		bool throwIfUnexpectedType = false)
+		where TKey : notnull
 	{
 		if (cache.TryGetValue(key, out object o))
 		{
@@ -73,6 +80,7 @@ public static class CacheAdapterExtensions
 	private static TValue GetOrCreateLazyCore<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key, Func<TKey, Lazy<TValue>> valueFactory)
+		where TKey : notnull
 	{
 		if (!cache.TryGetValue(key, out object o))
 		{
@@ -103,13 +111,14 @@ public static class CacheAdapterExtensions
 	/// or a its container type.
 	/// </exception>
 	/// <exception cref="InvalidOperationException">
-	/// If <paramref name="valueFactory"/> returns null.
+	/// If <paramref name="valueFactory"/> returns <see langword="null"/>.
 	/// </exception>
 	/// <inheritdoc cref="GetOrCreateLazy{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})"/>
 	public static TValue GetOrCreateLazy<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, Func<TValue>> valueFactory)
+		where TKey : notnull
 	{
 		if (cache is null) throw new ArgumentNullException(nameof(cache));
 		if (key is null) throw new ArgumentNullException(nameof(key));
@@ -118,8 +127,7 @@ public static class CacheAdapterExtensions
 
 		return GetOrCreateLazyCore(cache, key, k =>
 		{
-			var factory = valueFactory(k);
-			if (factory is null) throw new InvalidOperationException(CannotProcessNullFactory);
+			var factory = valueFactory(k) ?? throw new InvalidOperationException(CannotProcessNullFactory);
 			var lazy = Lazy.Create(factory);
 			cache.Set(k, lazy);
 			return lazy;
@@ -127,14 +135,14 @@ public static class CacheAdapterExtensions
 	}
 
 	/// <summary>
-	/// Attempts to retrieve the item associated with the provide key.
-	/// If it is not present, it inserts a Lazy of <typeparamref name="TValue"/>
+	/// Attempts to retrieve the item associated with the provided <paramref name="key"/>.
+	/// If it is not present, it inserts a <see cref="Lazy{T}"/> of <typeparamref name="TValue"/>
 	/// from the <paramref name="valueFactory"/>.
 	/// If the result of the Lazy causes an exception to be thrown, the item is evicted from the cache.
 	/// </summary>
 	/// <remarks>
-	/// The benefit of this method is that regardless if cache insertion is optimisitc,
-	/// the time it takes to create a Lazy is potentially miniscule in comparison to how long it takes
+	/// The benefit of this method is that regardless if cache insertion is optimistic,
+	/// the time it takes to create a Lazy is potentially minuscule in comparison to how long it takes
 	/// to complete the <paramref name="valueFactory"/> therefore reducing any contention or wasted cycles.
 	/// But it is important to understand that it is still possible (although much less likely) to execute the <paramref name="valueFactory"/> more than once before the value is returned.
 	/// </remarks>
@@ -147,6 +155,7 @@ public static class CacheAdapterExtensions
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, TValue> valueFactory)
+		where TKey : notnull
 	{
 		if (cache is null) throw new ArgumentNullException(nameof(cache));
 		if (key is null) throw new ArgumentNullException(nameof(key));
@@ -166,6 +175,7 @@ public static class CacheAdapterExtensions
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TValue> valueFactory)
+		where TKey : notnull
 	{
 		if (cache is null) throw new ArgumentNullException(nameof(cache));
 		if (key is null) throw new ArgumentNullException(nameof(key));
@@ -183,6 +193,7 @@ public static class CacheAdapterExtensions
 	private static Task<TValue> GetOrCreateLazyAsyncCore<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key, Func<TKey, Lazy<Task<TValue>>> valueFactory)
+		where TKey : notnull
 	{
 		if (!cache.TryGetValue(key, out object o))
 		{
@@ -217,11 +228,12 @@ public static class CacheAdapterExtensions
 	}
 
 	/// <inheritdoc cref="GetOrCreateLazyAsync{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, Task{TValue}})"/>
-	/// <inheritdoc cref="GetOrCreateLazy{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, Func{TValue}}))"/>
+	/// <inheritdoc cref="GetOrCreateLazy{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, Func{TValue}})"/>
 	public static Task<TValue> GetOrCreateLazyAsync<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, Func<Task<TValue>>> valueFactory)
+		where TKey : notnull
 	{
 		if (cache is null) throw new ArgumentNullException(nameof(cache));
 		if (key is null) throw new ArgumentNullException(nameof(key));
@@ -230,8 +242,7 @@ public static class CacheAdapterExtensions
 
 		return GetOrCreateLazyAsyncCore(cache, key, key =>
 		{
-			var factory = valueFactory(key);
-			if (factory is null) throw new InvalidOperationException(CannotProcessNullFactory);
+			var factory = valueFactory(key) ?? throw new InvalidOperationException(CannotProcessNullFactory);
 			var lazy = Lazy.Create(factory);
 			cache.Set(key, lazy);
 			return lazy;
@@ -239,8 +250,8 @@ public static class CacheAdapterExtensions
 	}
 
 	/// <summary>
-	/// Attempts to retrieve the task associated with the provide key.
-	/// If it is not present it inserts a Lazy of a Task of <typeparamref name="TValue"/>
+	/// Attempts to retrieve the task associated with the provided <paramref name="key"/>.
+	/// If it is not present it inserts a <see cref="Lazy{T}"/> of a <see cref="Task{TResult}"/> of <typeparamref name="TValue"/>
 	/// from the <paramref name="valueFactory"/>.
 	/// If the result of the Lazy or the Task causes an exception to be thrown, the item is evicted from the cache.
 	/// </summary>
@@ -249,6 +260,7 @@ public static class CacheAdapterExtensions
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, Task<TValue>> valueFactory)
+		where TKey : notnull
 	{
 		if (cache is null) throw new ArgumentNullException(nameof(cache));
 		if (key is null) throw new ArgumentNullException(nameof(key));
@@ -268,6 +280,7 @@ public static class CacheAdapterExtensions
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<Task<TValue>> valueFactory)
+		where TKey : notnull
 	{
 		if (cache is null) throw new ArgumentNullException(nameof(cache));
 		if (key is null) throw new ArgumentNullException(nameof(key));
@@ -289,6 +302,7 @@ public static class CacheAdapterExtensions
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		TValue defaultValue = default!)
+		where TKey : notnull
 		=> new(cache, key, defaultValue);
 
 	/// <summary>
@@ -298,26 +312,30 @@ public static class CacheAdapterExtensions
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TValue> factory)
+		where TKey : notnull
 		=> new(cache, key, factory);
 
-	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})">
+	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})"/>
 	public static LazyCacheItem<TKey, TValue> CreateLazyItem<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, TValue> factory)
+		where TKey : notnull
 		=> new(cache, key, factory);
 
-	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})">
+	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})"/>
 	public static AsyncLazyCacheItem<TKey, TValue> CreateAsyncLazyItem<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<Task<TValue>> factory)
+		where TKey : notnull
 		=> new(cache, key, factory);
 
-	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})">
+	/// <inheritdoc cref="CreateLazyItem{TKey, TValue}(ICacheAdapter{TKey}, TKey, Func{TKey, TValue})"/>
 	public static AsyncLazyCacheItem<TKey, TValue> CreateAsyncLazyItem<TKey, TValue>(
 		this ICacheAdapter<TKey> cache,
 		TKey key,
 		Func<TKey, Task<TValue>> factory)
+		where TKey : notnull
 		=> new(cache, key, factory);
 }

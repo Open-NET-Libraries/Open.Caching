@@ -8,11 +8,21 @@ namespace Open.Caching;
 public class ObjectCacheAdapter
 	: CacheAdapterBase<string, ObjectCache>
 {
+	/// <summary>
+	/// Constructs an instance of <see cref="ObjectCacheAdapter"/> using the provided <paramref name="cache"/>.
+	/// </summary>
 	public ObjectCacheAdapter(ObjectCache cache) : base(cache) { }
 
+	/// <summary>
+	/// Constructs an instance of <see cref="ObjectCacheAdapter"/> using <see cref="MemoryCache.Default"/>
+	/// </summary>
 	public ObjectCacheAdapter() : this(MemoryCache.Default) { }
 
 	private static ObjectCacheAdapter? _default;
+
+	/// <summary>
+	/// The default instance of <see cref="ObjectCacheAdapter"/> with <see cref="MemoryCache.Default"/> as the underlying cache.
+	/// </summary>
 	public static ObjectCacheAdapter Default
 		=> LazyInitializer.EnsureInitialized(ref _default)!;
 
@@ -20,6 +30,9 @@ public class ObjectCacheAdapter
 	public override void Remove(string key)
 		=> Cache.Remove(key);
 
+	/// <summary>
+	/// The null value instance.
+	/// </summary>
 	public static readonly object NullValue = new();
 
 	/// <inheritdoc />

@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 
 namespace Open.Caching.Extensions.Memory;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary.")]
+[SuppressMessage("Roslynator", "RCS1229:Use async/await when necessary.")]
 public static class MemoryCacheExtensions
 {
 	private static bool IsNullableType<T>()
@@ -18,13 +19,13 @@ public static class MemoryCacheExtensions
 		: $"Expected type {typeof(T)} but actual type found was {o.GetType()}.");
 
 	/// <remarks>
-	/// If <paramref name="throwIfUnexpectedType"/> is true
+	/// If <paramref name="throwIfUnexpectedType"/> is <see langword="true"/>
 	/// and the value found does not match either <typeparamref name="TValue"/>
-	/// or a Lazy of <typeparamref name="TValue"/>
+	/// or a <see cref="Lazy{T}"/> of <typeparamref name="TValue"/>
 	/// then an <see cref="InvalidCastException"/> will be thrown.
 	/// </remarks>
 	/// <exception cref="InvalidCastException">
-	/// If <paramref name="throwIfUnexpectedType"/> is true
+	/// If <paramref name="throwIfUnexpectedType"/> is <see langword="true"/>
 	/// and the value does not resolve to the expected type.
 	/// </exception>
 	/// <inheritdoc cref="IMemoryCache.TryGetValue(object, out object)"/>
@@ -34,29 +35,30 @@ public static class MemoryCacheExtensions
 		out TValue value,
 		bool throwIfUnexpectedType)
 	{
-		if (cache.TryGetValue(key, out object o))
+		if (!cache.TryGetValue(key, out object? o))
+			goto NotFound;
+
+		switch (o)
 		{
-			switch (o)
-			{
-				case null when IsNullableType<TValue>():
-					value = default!;
-					return true;
+			case null when IsNullableType<TValue>():
+				value = default!;
+				return true;
 
-				case TValue item:
-					value = item;
-					return true;
-			}
-
-			if (throwIfUnexpectedType)
-				throw UnexpectedTypeException<TValue>(o);
+			case TValue item:
+				value = item;
+				return true;
 		}
 
+		if (throwIfUnexpectedType)
+			throw UnexpectedTypeException<TValue>(o);
+
+		NotFound:
 		value = default!;
 		return false;
 	}
 
 	/// <summary>
-	/// Gets the value from the cache otherwise returns the default of <typeparamref name="TValue"/>.
+	/// Gets the value from the cache otherwise returns the <paramref name="defaultValue"/> of <typeparamref name="TValue"/>.
 	/// </summary>
 	/// <exception cref="InvalidCastException">If the type does not match the <typeparamref name="TValue"/>.</exception>
 	public static TValue GetOrDefault<TValue>(
@@ -69,13 +71,13 @@ public static class MemoryCacheExtensions
 	private const string CannotProcessNullLazy = "Cannot process a null Lazy.";
 
 	/// <remarks>
-	/// If <paramref name="throwIfUnexpectedType"/> is true
+	/// If <paramref name="throwIfUnexpectedType"/> is <see langword="true"/>
 	/// and the value found does not match either <typeparamref name="TValue"/>
-	/// or a Lazy of <typeparamref name="TValue"/>
+	/// or a <see cref="Lazy{T}"/> of <typeparamref name="TValue"/>
 	/// then an <see cref="InvalidCastException"/> will be thrown.
 	/// </remarks>
 	/// <exception cref="InvalidCastException">
-	/// If <paramref name="throwIfUnexpectedType"/> is true
+	/// If <paramref name="throwIfUnexpectedType"/> is <see langword="true"/>
 	/// and the value does not resolve to the expected type.
 	/// </exception>
 	/// <inheritdoc cref="IMemoryCache.TryGetValue(object, out object)"/>
@@ -85,27 +87,28 @@ public static class MemoryCacheExtensions
 		out Lazy<TValue> value,
 		bool throwIfUnexpectedType = false)
 	{
-		if (cache.TryGetValue(key, out object o))
+		if (!cache.TryGetValue(key, out object? o))
+			goto NotFound;
+
+		switch (o)
 		{
-			switch (o)
-			{
-				case null when IsNullableType<TValue>():
-					value = Lazy.Default<TValue>();
-					return true;
+			case null when IsNullableType<TValue>():
+				value = Lazy.Default<TValue>();
+				return true;
 
-				case Lazy<TValue> lazy:
-					value = lazy;
-					return true;
+			case Lazy<TValue> lazy:
+				value = lazy;
+				return true;
 
-				case TValue item:
-					value = Lazy.Create(() => item);
-					return true;
-			}
-
-			if (throwIfUnexpectedType)
-				throw UnexpectedTypeException<Lazy<TValue>>(o);
+			case TValue item:
+				value = Lazy.FromValue(item);
+				return true;
 		}
 
+		if (throwIfUnexpectedType)
+			throw UnexpectedTypeException<Lazy<TValue>>(o);
+
+		NotFound:
 		value = default!;
 		return false;
 	}
@@ -114,11 +117,9 @@ public static class MemoryCacheExtensions
 		this IMemoryCache cache,
 		object key, Func<object, Lazy<TValue>> valueFactory)
 	{
-		if (!cache.TryGetValue(key, out object o))
+		if (!cache.TryGetValue(key, out object? o))
 		{
-			var lazy = valueFactory(key);
-			if (lazy is null) throw new InvalidOperationException(CannotProcessNullLazy);
-
+			var lazy = valueFactory(key) ?? throw new InvalidOperationException(CannotProcessNullLazy);
 			try
 			{
 				return lazy.Value;
@@ -140,7 +141,7 @@ public static class MemoryCacheExtensions
 	}
 
 	/// <exception cref="InvalidOperationException">
-	/// If <paramref name="valueFactory"/> returns null.
+	/// If <paramref name="valueFactory"/> returns <see langword="null"/>.
 	/// </exception>
 	/// <inheritdoc cref="GetOrCreateLazy{TValue}(IMemoryCache, object, Func{object, TValue})"/>
 	public static TValue GetOrCreateLazy<TValue>(
@@ -167,7 +168,7 @@ public static class MemoryCacheExtensions
 	}
 
 	/// <exception cref="InvalidOperationException">
-	/// If <paramref name="valueFactory"/> returns null.
+	/// If <paramref name="valueFactory"/> returns <see langword="null"/>.
 	/// </exception>
 	/// <inheritdoc cref="GetOrCreateLazy{TValue}(IMemoryCache, object, Func{object, TValue})"/>
 	public static TValue GetOrCreateLazy<TValue>(
@@ -185,8 +186,7 @@ public static class MemoryCacheExtensions
 			Lazy<TValue> lazy;
 			using (var cacheEntry = cache.CreateEntry(k))
 			{
-				var factory = valueFactory(cacheEntry);
-				if (factory is null) throw new InvalidOperationException(CannotProcessNullFactory);
+				var factory = valueFactory(cacheEntry) ?? throw new InvalidOperationException(CannotProcessNullFactory);
 				lazy = Lazy.Create(factory);
 				cacheEntry.Value = lazy;
 			}
@@ -195,7 +195,7 @@ public static class MemoryCacheExtensions
 	}
 
 	/// <exception cref="InvalidOperationException">
-	/// If <paramref name="valueFactory"/> returns null.
+	/// If <paramref name="valueFactory"/> returns <see langword="null"/>.
 	/// </exception>
 	/// <inheritdoc cref="GetOrCreateLazy{TValue}(IMemoryCache, object, Func{object, TValue})"/>
 	public static TValue GetOrCreateLazy<TValue>(
@@ -210,8 +210,7 @@ public static class MemoryCacheExtensions
 
 		return GetOrCreateLazyCore(cache, key, k =>
 		{
-			var factory = valueFactory(k);
-			if (factory is null) throw new InvalidOperationException(CannotProcessNullFactory);
+			var factory = valueFactory(k) ?? throw new InvalidOperationException(CannotProcessNullFactory);
 			var lazy = Lazy.Create(factory);
 			cache.Set(k, lazy);
 			return lazy;
@@ -219,16 +218,17 @@ public static class MemoryCacheExtensions
 	}
 
 	/// <summary>
-	/// Attempts to retrieve the item associated with the provide key.
-	/// If it is not present, it inserts a Lazy of <typeparamref name="TValue"/>
+	/// Attempts to retrieve the item associated with the provided <paramref name="key"/>.
+	/// If it is not present, it inserts a <see cref="Lazy{T}"/> of <typeparamref name="TValue"/>
 	/// from the <paramref name="valueFactory"/>.
 	/// If the result of the Lazy causes an exception to be thrown, the item is evicted from the cache.
 	/// </summary>
 	/// <remarks>
-	/// The benefit of this method is that regardless if cache insertion is optimisitc,
-	/// the time it takes to create a Lazy is potentially miniscule in comparison to how long it takes
+	/// The benefit of this method is that regardless if cache insertion is optimistic,
+	/// the time it takes to create a Lazy is potentially minuscule compared to how long it takes
 	/// to complete the <paramref name="valueFactory"/> therefore reducing any contention or wasted cycles.
-	/// But it is important to understand that it is still possible (although much less likely) to execute the <paramref name="valueFactory"/> more than once before the value is returned.
+	/// But it is important to understand that it is still possible (although much less likely)
+	/// to execute the <paramref name="valueFactory"/> more than once before the value is returned.
 	/// </remarks>
 	/// <exception cref="InvalidCastException">
 	/// If a value is found but the type
@@ -276,11 +276,9 @@ public static class MemoryCacheExtensions
 		this IMemoryCache cache,
 		object key, Func<object, Lazy<Task<TValue>>> valueFactory)
 	{
-		if (!cache.TryGetValue(key, out object o))
+		if (!cache.TryGetValue(key, out object? o))
 		{
-			var lazy = valueFactory(key);
-			if (lazy is null) throw new InvalidOperationException(CannotProcessNullLazy);
-
+			var lazy = valueFactory(key) ?? throw new InvalidOperationException(CannotProcessNullLazy);
 			try
 			{
 				var task = lazy.Value;
@@ -310,7 +308,7 @@ public static class MemoryCacheExtensions
 	}
 
 	/// <exception cref="InvalidOperationException">
-	/// If <paramref name="valueFactory"/> returns null.
+	/// If <paramref name="valueFactory"/> returns <see langword="null"/>.
 	/// </exception>
 	/// <inheritdoc cref="GetOrCreateLazyAsync{TValue}(IMemoryCache, object, Func{object, Task{TValue}})"/>
 	public static Task<TValue> GetOrCreateLazyAsync<TValue>(
@@ -352,8 +350,7 @@ public static class MemoryCacheExtensions
 			Lazy<Task<TValue>> lazy;
 			using (var cacheEntry = cache.CreateEntry(k))
 			{
-				var factory = valueFactory(cacheEntry);
-				if (factory is null) throw new InvalidOperationException(CannotProcessNullFactory);
+				var factory = valueFactory(cacheEntry) ?? throw new InvalidOperationException(CannotProcessNullFactory);
 				lazy = Lazy.Create(factory);
 				cacheEntry.Value = lazy;
 			}
@@ -374,8 +371,7 @@ public static class MemoryCacheExtensions
 
 		return GetOrCreateLazyAsyncCore(cache, key, key =>
 		{
-			var factory = valueFactory(key);
-			if (factory is null) throw new InvalidOperationException(CannotProcessNullFactory);
+			var factory = valueFactory(key) ?? throw new InvalidOperationException(CannotProcessNullFactory);
 			var lazy = Lazy.Create(factory);
 			cache.Set(key, lazy);
 			return lazy;
@@ -383,8 +379,8 @@ public static class MemoryCacheExtensions
 	}
 
 	/// <summary>
-	/// Attempts to retrieve the task associated with the provide key.
-	/// If it is not present it inserts a Lazy of a Task of <typeparamref name="TValue"/>
+	/// Attempts to retrieve the task associated with the provided <paramref name="key"/>.
+	/// If it is not present it inserts a <see cref="Lazy{TValue}"/> of a <see cref="Task{TValue}"/> of <typeparamref name="TValue"/>
 	/// from the <paramref name="valueFactory"/>.
 	/// If the result of the Lazy or the Task causes an exception to be thrown, the item is evicted from the cache.
 	/// </summary>

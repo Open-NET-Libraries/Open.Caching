@@ -1,14 +1,19 @@
 ﻿namespace Open.Caching;
 
+/// <summary>
+/// Interface for defining a cache adapter.
+/// </summary>
+/// <typeparam name="TKey">The non-null key type.</typeparam>
 public interface ICacheAdapter<TKey>
+	where TKey : notnull
 {
 	/// <summary>
-	/// Gets the item associated with this key if present.
+	/// Gets the <paramref name="item"/> associated with the provided <paramref name="key"/> if present.
 	/// </summary>
 	/// <param name="key">A <typeparamref name="TKey"/> identifying the requested item.</param>
 	/// <param name="item">The located item or default for <typeparamref name="TValue"/>.</param>
 	/// <param name="throwIfUnexpectedType"></param>
-	/// <returns>True if the key was found; otherwise false.</returns>
+	/// <returns><see langword="true"/> if the key was found; otherwise <see langword="false"/>.</returns>
 	/// <exception cref="InvalidCastException">
 	/// If <paramref name="throwIfUnexpectedType"/> is true
 	/// and the value does not resolve to the expected type.
