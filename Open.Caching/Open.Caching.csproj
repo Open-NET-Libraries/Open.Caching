@@ -19,7 +19,7 @@
 		<RepositoryUrl>https://github.com/Open-NET-Libraries/Open.Caching/</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Open-NET-Libraries/Open.Caching/</PackageProjectUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>3.0.1</Version>
+		<Version>3.1.0</Version>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>

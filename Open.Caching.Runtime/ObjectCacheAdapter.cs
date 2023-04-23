@@ -5,7 +5,7 @@ namespace Open.Caching;
 /// <summary>
 /// <see cref="ObjectCache"/> adapter with functionality for simplifying cache item access.
 /// </summary>s
-public class ObjectCacheAdapter
+public sealed class ObjectCacheAdapter
 	: CacheAdapterBase<string, ObjectCache>
 {
 	/// <summary>

@@ -62,7 +62,7 @@ public class MemoryCacheAdapter<TKey>
 
 /// <inheritdoc />
 [ExcludeFromCodeCoverage]
-public class MemoryCacheAdapter : MemoryCacheAdapter<object>
+public sealed class MemoryCacheAdapter : MemoryCacheAdapter<object>
 {
 	/// <summary>
 	/// Constructs a new instance of <see cref="MemoryCacheAdapter"/>.

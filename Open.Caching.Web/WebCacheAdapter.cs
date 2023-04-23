@@ -1,18 +1,32 @@
-﻿using System.Web.Caching;
+﻿using System.Web;
+using System.Web.Caching;
 
 namespace Open.Caching;
 
 /// <summary>
 /// <see cref="System.Web.Caching"/>.<see cref="Cache"/> adapter with functionality for simplifying cache item access.
 /// </summary>s
-public class WebCacheAdapter
+public sealed class WebCacheAdapter
 	: CacheAdapterBase<string, Cache>
 {
 	/// <summary>
 	/// Constructs a new instance of <see cref="WebCacheAdapter"/>.
 	/// </summary>
-	/// <param name="cache"></param>
 	public WebCacheAdapter(Cache cache) : base(cache) { }
+
+	/// <summary>
+	/// Constructs a new instance of <see cref="WebCacheAdapter"/>.
+	/// </summary>
+	public WebCacheAdapter() : base(HttpRuntime.Cache) { }
+
+	static WebCacheAdapter? _instance;
+
+	/// <summary>
+	/// Returns the shared default instance of <see cref="WebCacheAdapter"/>.
+	/// </summary>
+	public static WebCacheAdapter Default 
+		=> LazyInitializer.EnsureInitialized(ref _instance)!;
+
 
 	/// <inheritdoc />
 	public override void Remove(string key)
