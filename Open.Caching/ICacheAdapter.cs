@@ -15,7 +15,7 @@ public interface ICacheAdapter<TKey>
 	/// <param name="throwIfUnexpectedType"></param>
 	/// <returns><see langword="true"/> if the key was found; otherwise <see langword="false"/>.</returns>
 	/// <exception cref="InvalidCastException">
-	/// If <paramref name="throwIfUnexpectedType"/> is true
+	/// If <paramref name="throwIfUnexpectedType"/> is <see langword="true"/>
 	/// and the value does not resolve to the expected type.
 	/// </exception>
 	bool TryGetValue<TValue>(

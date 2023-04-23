@@ -1,6 +1,6 @@
-﻿using System.Diagnostics.Contracts;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 
 namespace Open.Caching;
 
